@@ -26,7 +26,7 @@ public class Character extends PhysicsEntity
 	{
 		super.render(screen); // Render the hitbox
 		
-		screen.draw(Art.instance.character[0][0], getPosition().getX(), getPosition().getY());
+		screen.draw(Art.instance.character[0][1], getPosition().getX(), getPosition().getY());
 	}
 
 	public void update(double delta) 

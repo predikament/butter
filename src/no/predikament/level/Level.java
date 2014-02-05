@@ -7,47 +7,52 @@ import no.predikament.Bitmap;
 import no.predikament.Game;
 import no.predikament.entity.Camera;
 import no.predikament.entity.Character;
+import no.predikament.entity.Entity;
 import no.predikament.entity.tile.Tile;
 import no.predikament.util.Vector2;
 
 public class Level 
 {
+	@SuppressWarnings("unused")
 	private final Game 		game;
 	@SuppressWarnings("unused")
 	private final Character character;
 	@SuppressWarnings("unused")
 	private final Camera 	camera;
+	private List<Tile> 		tiles;
+	private List<Entity> 	entities;
 	
-	private final List<Tile> tiles;
-	private final int TOTAL_TILES_WIDTH 	= 20;
-	private final int TOTAL_TILES_HEIGHT 	= 20;
+	private int width_in_tiles;
+	private int height_in_tiles;
 	
 	public Level(Game game, Character character, Camera camera)
 	{
 		this.game = game;
-		this.character = character;
 		this.camera = camera;
+		this.character = character;
 		
-		tiles = new ArrayList<Tile>();
+		entities 		= new ArrayList<Entity>();
+		tiles 			= new ArrayList<Tile>();
+		width_in_tiles 	= 0;
+		height_in_tiles = 0;
 	}
 	
 	public void init()
 	{
 		tiles.clear();
+		entities.clear();
 				
-		for (int x = 0; x < TOTAL_TILES_WIDTH; ++x)
-		{
-			for (int y = 0; y < TOTAL_TILES_HEIGHT; ++y)
-			{
-				Tile t = new Tile(game, (int) (Math.random() * 7));
-				
-				t.setPosition(new Vector2(x * 16, y * 16));
-				
-				tiles.add(t);
-			}
-		}
+		loadTMXFileIntoArrayList("/maps/test.tmx", tiles);
 	}
 	
+	private void loadTMXFileIntoArrayList(String string, List<Tile> tiles) 
+	{
+		if (tiles == null) tiles = new ArrayList<Tile>();
+		else tiles.clear();
+		
+		
+	}
+
 	public Tile getTile(int x, int y)
 	{
 		Tile t = null;

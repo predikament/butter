@@ -105,7 +105,7 @@ public class Game extends Canvas implements Runnable
 	
 	private void render(Bitmap screen)
 	{
-		screen.clear(0x60D5AC);
+		screen.clear(0x5FD4B1);
 		
 		level.render(screen);
 		character.render(screen);
