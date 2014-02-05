@@ -1,0 +1,14 @@
+Main (Darkest - Lightest):
+	#006D4C
+	#207E62
+	#00A876
+	#35D4A4
+	#5FD4B1
+
+Compliment (Darkest - Lightest):
+	#A63A00
+	#BF6230
+	#FF5900
+	#FF8240
+	#FFA473
+
