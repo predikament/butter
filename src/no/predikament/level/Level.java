@@ -19,8 +19,8 @@ public class Level
 	private final Camera 	camera;
 	
 	private final List<Tile> tiles;
-	private final int TOTAL_TILES_WIDTH 	= 5;
-	private final int TOTAL_TILES_HEIGHT 	= 5;
+	private final int TOTAL_TILES_WIDTH 	= 20;
+	private final int TOTAL_TILES_HEIGHT 	= 20;
 	
 	public Level(Game game, Character character, Camera camera)
 	{
@@ -39,7 +39,7 @@ public class Level
 		{
 			for (int y = 0; y < TOTAL_TILES_HEIGHT; ++y)
 			{
-				Tile t = new Tile(game, 1);
+				Tile t = new Tile(game, (int) (Math.random() * 7));
 				
 				t.setPosition(new Vector2(x * 16, y * 16));
 				

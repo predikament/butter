@@ -2,6 +2,7 @@ package no.predikament;
 
 import java.awt.Canvas;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
@@ -59,6 +60,9 @@ public class Game extends Canvas implements Runnable
 		setMaximumSize(size);
 		setFocusable(true);
 		
+		// Cursor
+		setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
+		
 		inputHandler 		= new InputHandler(this);
 		fpsPrintoutEnabled 	= true;
 		frameTimer 			= new Stopwatch(false);
@@ -101,7 +105,7 @@ public class Game extends Canvas implements Runnable
 	
 	private void render(Bitmap screen)
 	{
-		screen.clear(0x9dba5e);
+		screen.clear(0x60D5AC);
 		
 		level.render(screen);
 		character.render(screen);
@@ -263,15 +267,7 @@ public class Game extends Canvas implements Runnable
 		{
 			/*int keycode = event.getKeyCode();
 			
-			try
-			{
-				if (pressedKeys.contains(keycode) == true) pressedKeys.remove(keycode);
-			}
-			catch (ConcurrentModificationException cme)
-			{
-				// Not handling for now, just printing the stack trace
-				cme.printStackTrace();
-			}*/
+			if (pressedKeys.contains(keycode) == true) pressedKeys.remove(keycode);*/
 		}
 		
 		public synchronized void keyTyped(KeyEvent event)
