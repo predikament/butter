@@ -7,10 +7,10 @@ import no.predikament.util.Vector2;
 
 public class Character extends PhysicsEntity 
 {
-	private static final int HITBOX_WIDTH = 15;
-	private static final int HITBOX_HEIGHT = 31;
-	private static final int HITBOX_OFFSET_X = 8;
-	private static final int HITBOX_OFFSET_Y = 0;
+	private static final int HITBOX_WIDTH = 32;  //12;
+	private static final int HITBOX_HEIGHT = 32; //22;
+	private static final int HITBOX_OFFSET_X = 0;//10;
+	private static final int HITBOX_OFFSET_Y = 0;//9;
 	
 	public Character(Game game)
 	{
@@ -24,7 +24,7 @@ public class Character extends PhysicsEntity
 	
 	public void render(Bitmap screen) 
 	{
-		super.render(screen);
+		super.render(screen); // Render the hitbox
 		
 		screen.draw(Art.instance.character[0][0], getPosition().getX(), getPosition().getY());
 	}
