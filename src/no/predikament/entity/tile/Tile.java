@@ -18,7 +18,10 @@ public class Tile extends PhysicsEntity
 	
 	public void render(Bitmap screen)
 	{
-		screen.draw(Art.instance.tiles[getType()][0], getPosition().getX(), getPosition().getY());
+		if (getType() > 0) 
+		{
+			screen.draw(Art.instance.tiles[getType()][0], getPosition().getX(), getPosition().getY());
+		}
 	}
 	
 	public void setType(int type)
@@ -28,5 +31,10 @@ public class Tile extends PhysicsEntity
 	public final int getType()
 	{
 		return type;
+	}
+	
+	public String toString()
+	{
+		return String.format("Tile %d (%s)", getType(), getPosition());
 	}
 }
