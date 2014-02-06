@@ -23,7 +23,6 @@ import no.predikament.util.Vector2;
 
 public class Level 
 {
-	@SuppressWarnings("unused")
 	private final Game 		game;
 	@SuppressWarnings("unused")
 	private final Character character;
@@ -32,9 +31,7 @@ public class Level
 	private List<Tile> 		tiles;
 	private List<Entity> 	entities;
 	
-	@SuppressWarnings("unused")
 	private int width_in_tiles;
-	@SuppressWarnings("unused")
 	private int height_in_tiles;
 	
 	public Level(Game game, Character character, Camera camera)
@@ -57,13 +54,10 @@ public class Level
 		loadTMXFileIntoArrayList("/maps/test.tmx", tiles);
 	}
 	
-	private void loadTMXFileIntoArrayList(String string, List<Tile> tiles) 
+	private Document getXMLDocument(String path)
 	{
-		if (tiles == null) tiles = new ArrayList<Tile>();
-		else if (tiles.isEmpty() == false) tiles.clear();
-		
-		URL urlFile = Level.class.getResource("/maps/test.tmx");
-		Document xmlDoc = null;
+		Document document = null;
+		URL urlFile = Level.class.getResource(path);
 		
 		if (urlFile != null)
 		{
@@ -73,13 +67,23 @@ public class Level
 			{	
 				DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 				DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-				xmlDoc = dBuilder.parse(xmlFile);
+				document = dBuilder.parse(xmlFile);
 			}
 			catch (Exception e)
 			{
 				e.printStackTrace();
 			}
 		}
+		
+		return document;
+	}
+	
+	private void loadTMXFileIntoArrayList(String string, List<Tile> tiles) 
+	{
+		if (tiles == null) tiles = new ArrayList<Tile>();
+		else if (tiles.isEmpty() == false) tiles.clear();
+		
+		Document xmlDoc = getXMLDocument("/maps/test.tmx");
 		
 		if (xmlDoc != null)
 		{
@@ -124,8 +128,8 @@ public class Level
 					
 					if (tile != null)
 					{
-						double tile_pos_x = currentNode / width_in_tiles;
-						double tile_pos_y = currentNode % height_in_tiles;
+						double tile_pos_x = currentNode % height_in_tiles;
+						double tile_pos_y = currentNode / width_in_tiles;
 						
 						tile_pos_x *= 16;
 						tile_pos_y *= 16;
@@ -144,21 +148,32 @@ public class Level
 
 	public Tile getTile(int x, int y)
 	{
-		/*Tile t = null;
+		Tile t = null;
+		int tile_nr = height_in_tiles * x + y;
 		
-		int tnr = TOTAL_TILES_HEIGHT * x + y;
+		try
+		{
+			if (tiles.isEmpty() == false && tile_nr <= tiles.size()) return tiles.get(tile_nr);
+		}
+		catch (IndexOutOfBoundsException ioobe)
+		{
+			System.out.println("getTile() tried to go out of bounds - returning null.");
+		}
 		
-		if (tnr >= 0 && tnr < tiles.size()) t = tiles.get(tnr);
-		
-		return t;*/
-		return null; // FIX THIS ASAP
+		return t;
 	}
 	
 	public void render(Bitmap screen) 
 	{
 		for (Tile t : tiles)
 		{
-			t.render(screen);
+			if (t.getPosition().getX() >= 0 && 
+				t.getPosition().getY() >= 0 &&
+				t.getPosition().getX() + t.getHitbox().getWidth() <= Game.WIDTH &&
+				t.getPosition().getY() + t.getHitbox().getHeight() <= Game.HEIGHT)
+			{
+				t.render(screen);
+			}
 		}
 	}
 	

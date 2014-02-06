@@ -29,9 +29,10 @@ public class Game extends Canvas implements Runnable
 	
 	public static final String 	TITLE 	= "Kittens vs Marbles";
 	public static final int 	FPS 	= 60;
-	public static final int		HEIGHT 	= 320;
-	public static final int 	WIDTH	= (int) (HEIGHT * 16.0 / 9.0);
-	public static final int 	SCALE	= 2;
+	public static final double 	ASP_RAT = 16.0 / 9.0;
+	public static final int 	WIDTH	= 320;
+	public static final int		HEIGHT 	= (int) (WIDTH / ASP_RAT);
+	public static final int 	SCALE	= 3;
 	
 	private boolean running;
 	

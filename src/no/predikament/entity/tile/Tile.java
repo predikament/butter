@@ -17,10 +17,12 @@ public class Tile extends PhysicsEntity
 	}
 	
 	public void render(Bitmap screen)
-	{
-		if (getType() > 0) 
+	{	
+		int draw_type = getType() - 1;
+		
+		if (draw_type >= 0) 
 		{
-			screen.draw(Art.instance.tiles[getType()][0], getPosition().getX(), getPosition().getY());
+			screen.draw(Art.instance.tiles[draw_type % 16][draw_type / 16], getPosition().getX(), getPosition().getY());
 		}
 	}
 	
