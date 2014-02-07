@@ -61,10 +61,12 @@ public class Bitmap
 	
 	public void setPixel(int x, int y, int color)
 	{
-		int cp = x + y * w;
-
-		//if (cp >= 0 && cp < pixels.length) pixels[cp] = color; // Wraps around, not good
-		if (x < w && y < h && cp >= 0 && cp < pixels.length) pixels[cp] = color;
+		if (x >= 0 && x < w && y >= 0 && y < h)
+		{
+			int cp = x + y * w;
+			
+			pixels[cp] = color;
+		}
 	}
 	
 	public int getPixel(int x, int y)
@@ -81,57 +83,8 @@ public class Bitmap
 		drawLine((int) x0, (int) y0, (int) x1, (int) y1, color);
 	}
 
-	public void drawLine(int x0, int y0, int x1, int y1, int color)
-	{
-		// http://www.simppa.fi/blog/extremely-fast-line-algorithm-as3-optimized/
-		// http://www.edepot.com/algorithm.html
-	}
-	
-	// Bresenham's (doesn't work, slope is messed up)
-	public void drawLineOld2(int x0, int y0, int x1, int y1, int color)
-	{
-		float error, m;
-		int x = x0, y = y0;
-		
-		if (x0 == x1)
-		{
-		   while (y != y1)
-		   {
-		      if (y1 - y0 > 0) ++y;
-		      else --y;
-		      
-		      setPixel(x, y, color);
-		   }
-		}
-		else
-		{
-		   m = (float) (y1 - y0) / (x1 - x0);
-		   error = 0;
-		   
-		   setPixel(x, y, color);
-		   
-		   while (x != x1)
-		   {
-		      error += m;
-		      
-		      if (error > 0.5)
-		      {
-		         if (x1 - x0 > 0) y += 1;
-		         else y -= 1;
-		         
-		         --error;
-		      }
-		      
-		      if (x1 - x0 > 0) ++x;
-		      else --x;
-		      
-		      setPixel(x, y, color);
-		   }
-		}
-	}
-
 	// Bresenham's (works)
-	public void drawLineOld1(int x0, int y0, int x1, int y1, int color)
+	public void drawLine(int x0, int y0, int x1, int y1, int color)
 	{
 		boolean steep = Math.abs(y1 - y0) > Math.abs(x1 - x0);
 				
@@ -177,6 +130,84 @@ public class Bitmap
 				y = y + ystep;
 				error += deltaX;
 			}
+		}
+	}
+	
+	// Extremely Fast Line Algorithm (EFLA, optimized for AS3) 
+	public void drawLineOld1(int x0, int y0, int x1, int y1, int color)
+	{
+		int shortLength = y1 - y0;
+		int longLength = x1 - x0;
+		boolean yLonger = false;
+		
+		if ((shortLength ^ (shortLength >> 31)) - (shortLength >> 31) > (longLength ^ (longLength >> 31)) - (longLength >> 31))
+		{
+			shortLength ^= longLength;
+			longLength ^= shortLength;
+			shortLength ^= longLength;
+			
+			yLonger = true;
+		}
+		
+		int increment = longLength < 0 ? -1 : 1;
+		float multiDiff = longLength == 0 ? shortLength : shortLength / longLength;
+		
+		if (yLonger)
+		{
+			for (int i = 0; i != longLength; i+= increment)
+			{
+				setPixel(x0 + i * multiDiff, y0 + i, color);
+			}
+		}
+		else
+		{
+			for (int i = 0; i != longLength; i += increment)
+			{
+				setPixel(x0 + i, y0 + i * multiDiff, color);
+			}
+		}
+	}
+	
+	// Bresenham's (doesn't work, slope is messed up)
+	public void drawLineOld2(int x0, int y0, int x1, int y1, int color)
+	{
+		float error, m;
+		int x = x0, y = y0;
+		
+		if (x0 == x1)
+		{
+		   while (y != y1)
+		   {
+		      if (y1 - y0 > 0) ++y;
+		      else --y;
+		      
+		      setPixel(x, y, color);
+		   }
+		}
+		else
+		{
+		   m = (float) (y1 - y0) / (x1 - x0);
+		   error = 0;
+		   
+		   setPixel(x, y, color);
+		   
+		   while (x != x1)
+		   {
+		      error += m;
+		      
+		      if (error > 0.5)
+		      {
+		         if (x1 - x0 > 0) y += 1;
+		         else y -= 1;
+		         
+		         --error;
+		      }
+		      
+		      if (x1 - x0 > 0) ++x;
+		      else --x;
+		      
+		      setPixel(x, y, color);
+		   }
 		}
 	}
 	

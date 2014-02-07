@@ -109,11 +109,8 @@ public class Game extends Canvas implements Runnable
 	{
 		screen.clear(0x5FD4B1);
 		
-		// level.render(screen);
-		character.render(screen);
-		
-		//screen.drawRectangle(0, 0, 1, 1, 0xFF00FFFF);
-		screen.drawLine(0, 0, 1, 1, 0xFF00FFFF);
+		level.render(screen);
+		//character.render(screen);
 		
 		++currentFrameCount;
 	}
