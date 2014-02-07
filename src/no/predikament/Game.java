@@ -109,8 +109,11 @@ public class Game extends Canvas implements Runnable
 	{
 		screen.clear(0x5FD4B1);
 		
-		level.render(screen);
+		// level.render(screen);
 		character.render(screen);
+		
+		//screen.drawRectangle(0, 0, 1, 1, 0xFF00FFFF);
+		screen.drawLine(0, 0, 1, 1, 0xFF00FFFF);
 		
 		++currentFrameCount;
 	}
@@ -238,7 +241,9 @@ public class Game extends Canvas implements Runnable
 			
 			Tile t = level.getTile(pos_x, pos_y);
 			
-			t.setType(t.getType() + 1);
+			t.setType((t.getType() + 1) % 8);
+			
+			System.out.println(t + (" (Hitbox: ") + t.getHitbox() + ")");
 		}
 		
 		public synchronized void mouseEntered(MouseEvent event)

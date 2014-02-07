@@ -64,7 +64,7 @@ public class Bitmap
 		int cp = x + y * w;
 
 		//if (cp >= 0 && cp < pixels.length) pixels[cp] = color; // Wraps around, not good
-		if (x < w && y < h) pixels[cp] = color;
+		if (x < w && y < h && cp >= 0 && cp < pixels.length) pixels[cp] = color;
 	}
 	
 	public int getPixel(int x, int y)
@@ -81,16 +81,23 @@ public class Bitmap
 		drawLine((int) x0, (int) y0, (int) x1, (int) y1, color);
 	}
 
-	public void drawLineOld(int x0, int y0, int x1, int y1, int color)
+	public void drawLine(int x0, int y0, int x1, int y1, int color)
+	{
+		// http://www.simppa.fi/blog/extremely-fast-line-algorithm-as3-optimized/
+		// http://www.edepot.com/algorithm.html
+	}
+	
+	// Bresenham's (doesn't work, slope is messed up)
+	public void drawLineOld2(int x0, int y0, int x1, int y1, int color)
 	{
 		float error, m;
 		int x = x0, y = y0;
 		
-		if(x0 == x1)
+		if (x0 == x1)
 		{
-		   while(y != y1)
+		   while (y != y1)
 		   {
-		      if(y1 - y0 > 0) ++y;
+		      if (y1 - y0 > 0) ++y;
 		      else --y;
 		      
 		      setPixel(x, y, color);
@@ -103,19 +110,19 @@ public class Bitmap
 		   
 		   setPixel(x, y, color);
 		   
-		   while(x != x1)
+		   while (x != x1)
 		   {
 		      error += m;
 		      
-		      if(error > 0.5)
+		      if (error > 0.5)
 		      {
-		         if(x1 - x0 > 0) y += 1;
+		         if (x1 - x0 > 0) y += 1;
 		         else y -= 1;
 		         
 		         --error;
 		      }
 		      
-		      if(x1 - x0 > 0) ++x;
+		      if (x1 - x0 > 0) ++x;
 		      else --x;
 		      
 		      setPixel(x, y, color);
@@ -123,10 +130,11 @@ public class Bitmap
 		}
 	}
 
-	public void drawLine(int x0, int y0, int x1, int y1, int color)
+	// Bresenham's (works)
+	public void drawLineOld1(int x0, int y0, int x1, int y1, int color)
 	{
 		boolean steep = Math.abs(y1 - y0) > Math.abs(x1 - x0);
-		
+				
 		if (steep)
 		{
 			// Swap X's with Y's
@@ -137,6 +145,7 @@ public class Bitmap
 			x1 = y1;
 			y1 = temp;
 		}
+		
 		if (x0 > x1)
 		{
 			// Swap X's and X's and Y's with Y's
