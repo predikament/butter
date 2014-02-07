@@ -78,16 +78,18 @@ public class Level
 		return document;
 	}
 	
-	private void loadTMXFileIntoArrayList(String string, List<Tile> tiles) 
+	private void loadTMXFileIntoArrayList(String map_path, List<Tile> tiles) 
 	{
 		if (tiles == null) tiles = new ArrayList<Tile>();
 		else if (tiles.isEmpty() == false) tiles.clear();
 		
-		Document xmlDoc = getXMLDocument("/maps/test.tmx");
+		Document xmlDoc = getXMLDocument(map_path);
 		
 		if (xmlDoc != null)
 		{
 			xmlDoc.getDocumentElement().normalize();
+			
+			System.out.printf("Successfully loaded map from \"%s\"", map_path);
 			
 			Element layer_node = (Element) xmlDoc.getElementsByTagName("layer").item(0);
 			String width_s = layer_node.getAttribute("width");
@@ -97,6 +99,8 @@ public class Level
 			{
 				width_in_tiles = Integer.parseInt(width_s);
 				height_in_tiles = Integer.parseInt(height_s);
+				
+				System.out.printf("(width: %d, height: %d)\n", width_in_tiles, height_in_tiles);
 			}
 			catch (NumberFormatException nfe)
 			{
@@ -128,13 +132,10 @@ public class Level
 					
 					if (tile != null)
 					{
-						double tile_pos_x = currentNode % height_in_tiles;
+						double tile_pos_x = currentNode % width_in_tiles;
 						double tile_pos_y = currentNode / width_in_tiles;
 						
-						tile_pos_x *= 16;
-						tile_pos_y *= 16;
-						
-						tile.setPosition(new Vector2(tile_pos_x, tile_pos_y));
+						tile.setPosition(new Vector2(tile_pos_x * 16, tile_pos_y * 16));
 						
 						// System.out.println("New tile created: " + tile);
 						tiles.add(tile);
@@ -149,7 +150,7 @@ public class Level
 	public Tile getTile(int x, int y)
 	{
 		Tile t = null;
-		int tile_nr = height_in_tiles * x + y;
+		int tile_nr = width_in_tiles * y + x;
 		
 		try
 		{
@@ -167,18 +168,27 @@ public class Level
 	{
 		for (Tile t : tiles)
 		{
-			if (t.getPosition().getX() >= 0 && 
-				t.getPosition().getY() >= 0 &&
+			/*if (t.getPosition().getX() > 0 && 
+				t.getPosition().getY() > 0 &&
 				t.getPosition().getX() + t.getHitbox().getWidth() <= Game.WIDTH &&
 				t.getPosition().getY() + t.getHitbox().getHeight() <= Game.HEIGHT)
 			{
 				t.render(screen);
-			}
+			}*/
+			t.render(screen);
 		}
 	}
 	
 	public void update(double delta) 
 	{
+		List<Tile> removable = new ArrayList<Tile>();
 		
+		for (Tile t : tiles)
+		{
+			if (t.isRemoved()) removable.add(t);
+			else t.update(delta);
+		}
+		
+		tiles.removeAll(removable);
 	}
 }

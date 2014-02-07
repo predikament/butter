@@ -67,6 +67,6 @@ public class PhysicsEntity extends Entity {
 	// Renders the hitbox
 	public void render(Bitmap screen)
 	{
-		screen.drawRectangle(getHitbox().getX(), getHitbox().getY(), getHitbox().getX() + getHitbox().getWidth(), getHitbox().getY() + getHitbox().getHeight(), 0xFF00FF00);
+		screen.drawRectangle(getHitbox().getX(), getHitbox().getY(), getHitbox().getMaxX(), getHitbox().getMaxY(), 0xFF00FF00);
 	}
 }

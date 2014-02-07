@@ -19,6 +19,7 @@ import java.util.Set;
 
 import no.predikament.entity.Camera;
 import no.predikament.entity.Character;
+import no.predikament.entity.tile.Tile;
 import no.predikament.level.Level;
 import no.predikament.util.Stopwatch;
 import no.predikament.util.Vector2;
@@ -232,7 +233,12 @@ public class Game extends Canvas implements Runnable
 		
 		public synchronized void mouseClicked(MouseEvent event)
 		{
+			int pos_x = (int) (event.getX() / Game.SCALE / 16);
+			int pos_y = (int) (event.getY() / Game.SCALE / 16);
 			
+			Tile t = level.getTile(pos_x, pos_y);
+			
+			t.setType(t.getType() + 1);
 		}
 		
 		public synchronized void mouseEntered(MouseEvent event)

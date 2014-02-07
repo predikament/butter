@@ -13,11 +13,16 @@ public class Tile extends PhysicsEntity
 	{
 		super(game);
 		
-		setType(type);
+		this.type = type;
+		
+		hitbox.setSize(16, 16);
 	}
 	
 	public void render(Bitmap screen)
 	{	
+		// Draw hitbox
+		super.render(screen);
+		
 		int draw_type = getType() - 1;
 		
 		if (draw_type >= 0) 
@@ -37,6 +42,6 @@ public class Tile extends PhysicsEntity
 	
 	public String toString()
 	{
-		return String.format("Tile %d (%s)", getType(), getPosition());
+		return String.format("Tile (type: %d) (%s)", getType(), getPosition());
 	}
 }

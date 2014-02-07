@@ -62,8 +62,9 @@ public class Bitmap
 	public void setPixel(int x, int y, int color)
 	{
 		int cp = x + y * w;
-		
-		if (cp >= 0 && cp < pixels.length) pixels[cp] = color;
+
+		//if (cp >= 0 && cp < pixels.length) pixels[cp] = color; // Wraps around, not good
+		if (x < w && y < h) pixels[cp] = color;
 	}
 	
 	public int getPixel(int x, int y)
@@ -78,6 +79,48 @@ public class Bitmap
 	public void drawLine(double x0, double y0, double x1, double y1, int color)
 	{
 		drawLine((int) x0, (int) y0, (int) x1, (int) y1, color);
+	}
+
+	public void drawLineOld(int x0, int y0, int x1, int y1, int color)
+	{
+		float error, m;
+		int x = x0, y = y0;
+		
+		if(x0 == x1)
+		{
+		   while(y != y1)
+		   {
+		      if(y1 - y0 > 0) ++y;
+		      else --y;
+		      
+		      setPixel(x, y, color);
+		   }
+		}
+		else
+		{
+		   m = (float) (y1 - y0) / (x1 - x0);
+		   error = 0;
+		   
+		   setPixel(x, y, color);
+		   
+		   while(x != x1)
+		   {
+		      error += m;
+		      
+		      if(error > 0.5)
+		      {
+		         if(x1 - x0 > 0) y += 1;
+		         else y -= 1;
+		         
+		         --error;
+		      }
+		      
+		      if(x1 - x0 > 0) ++x;
+		      else --x;
+		      
+		      setPixel(x, y, color);
+		   }
+		}
 	}
 
 	public void drawLine(int x0, int y0, int x1, int y1, int color)
@@ -165,9 +208,9 @@ public class Bitmap
 	public void drawRectangle(int x0, int y0, int x1, int y1, int color)
 	{
 		drawLine(x0, y0, x1, y0, color);
-		drawLine(x0, y1, x1, y1, color);
-		drawLine(x0, y0, x0, y1, color);
 		drawLine(x1, y0, x1, y1, color);
+		drawLine(x1, y1, x0, y1, color);
+		drawLine(x0, y1, x0, y0, color);
 	}
 	
 	public void fill(int x0, int y0, int x1, int y1, int color)

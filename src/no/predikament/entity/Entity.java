@@ -7,10 +7,13 @@ public class Entity
 {
 	protected final Game game;
 	protected Vector2 position;
+	private boolean removed;
 	
 	public Entity(Game game)
 	{
 		this.game = game;
+		
+		removed = false;
 		
 		position = Vector2.zero();
 	}
@@ -30,5 +33,17 @@ public class Entity
 	public void setPosition(Vector2 position)
 	{
 		this.position = position;
+	}
+
+	public void remove() 
+	{
+		removed = true;
+		
+		System.out.println(this + " was removed.");
+	}
+	
+	public boolean isRemoved() 
+	{
+		return removed;
 	}
 }

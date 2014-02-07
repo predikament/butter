@@ -14,7 +14,9 @@ public class Character extends PhysicsEntity
 	
 	public Character(Game game)
 	{
-		super(game, Vector2.zero(), Vector2.zero(), new Vector2(HITBOX_WIDTH, HITBOX_HEIGHT));
+		super(game);
+		
+		hitbox.setSize(32, 32);
 	}
 	
 	public Character(Game game, Vector2 position)
