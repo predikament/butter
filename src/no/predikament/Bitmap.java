@@ -63,7 +63,7 @@ public class Bitmap
 	{
 		if (x >= 0 && x < w && y >= 0 && y < h)
 		{
-			int cp = x + y * w;
+			int cp = w * y + x;
 			
 			pixels[cp] = color;
 		}
@@ -82,12 +82,88 @@ public class Bitmap
 	{
 		drawLine((int) x0, (int) y0, (int) x1, (int) y1, color);
 	}
-
-	// Bresenham's (works)
+	
 	public void drawLine(int x0, int y0, int x1, int y1, int color)
 	{
+		int dx = Math.abs(x1 - x0);
+		int dy = Math.abs(y1 - y0);
+		int sx = x0 < x1 ? 1 : -1;
+		int sy = y0 < y1 ? 1 : -1;
+		float err = (dx > dy ? dx : -dy) / 2;
+		
+		boolean drawing = true;
+		
+		while (drawing) 
+		{
+		    setPixel(x0, y0, color);
+		    
+		    if (x0 == x1 && y0 == y1) drawing = false;
+		    
+		    float e2 = err;
+		    
+		    if (e2 > -dx) 
+		    { 
+		    	err -= dy; 
+		    	x0 += sx;
+		    }
+		    
+		    if (e2 < dy)
+		    { 
+		    	err += dx; 
+		    	y0 += sy;
+		    }
+		}
+	}
+
+	public void drawLineBresenham2(int x0, int y0, int x1, int y1, int color)
+	{
+		if (x1 > 0) x1++;
+		else if (x1 < 0) x1--;
+		if (y1 > 0) y1++;
+		else if (y1 < 0) y1--;
+		
+		int deltaX = Math.abs(x1 - x0);
+		int deltaY = Math.abs(y1 - y0);
+		int stepX, stepY, lineError, error2;
+
+		if (x0 < x1) stepX = 1;
+		else stepX = -1;
+		 
+		if (y0 < y1) stepY = 1;
+		else stepY = -1;
+		 
+		if (deltaX > deltaY) lineError = deltaX;
+		else lineError = -deltaY;
+
+		lineError = Math.round(lineError / 2);
+
+		while (true)
+		{
+			setPixel(x0, y0, color);
+
+			if (x0 == x1 && y0 == y1) return;
+
+			error2 = lineError;
+
+			if (error2 > -deltaX)
+			{
+				lineError -= deltaY;
+				x0 += stepX;
+			}
+			
+			if (error2 < deltaY)
+			{
+				lineError += deltaX;
+				y0 += stepY;
+			}
+		}
+	}
+	
+	// Bresenham's (works)
+	public void drawLineBresenham(int x0, int y0, int x1, int y1, int color)
+	{	
 		boolean steep = Math.abs(y1 - y0) > Math.abs(x1 - x0);
-				
+		
 		if (steep)
 		{
 			// Swap X's with Y's
@@ -113,10 +189,9 @@ public class Bitmap
 		int deltaX = x1 - x0;
 		int deltaY = Math.abs(y1 - y0);
 		int error = deltaX / 2;
-		int ystep = 0;
+		int ystep = -1;
 		int y = y0;
-		if (y0 < y1) ystep = 1;
-		else ystep = -1;
+		if (y0 <= y1) ystep = 1;
 		
 		for (int x = x0; x <= x1; ++x)
 		{
@@ -248,9 +323,9 @@ public class Bitmap
 	public void drawRectangle(int x0, int y0, int x1, int y1, int color)
 	{
 		drawLine(x0, y0, x1, y0, color);
+		drawLine(x0, y1, x1, y1, color);
+		drawLine(x0, y0, x0, y1, color);
 		drawLine(x1, y0, x1, y1, color);
-		drawLine(x1, y1, x0, y1, color);
-		drawLine(x0, y1, x0, y0, color);
 	}
 	
 	public void fill(int x0, int y0, int x1, int y1, int color)
