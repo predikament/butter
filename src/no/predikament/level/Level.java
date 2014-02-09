@@ -24,16 +24,15 @@ import no.predikament.util.Vector2;
 public class Level 
 {
 	private final Game 		game;
-	@SuppressWarnings("unused")
 	private final Character character;
 	@SuppressWarnings("unused")
 	private final Camera 	camera;
 	private List<Tile> 		tiles;
 	private List<Entity> 	entities;
-	
+		
 	private int width_in_tiles;
 	private int height_in_tiles;
-	private double gravity = -9.82;
+	private double gravity = 9.82;
 	
 	public Level(Game game, Character character, Camera camera)
 	{
@@ -90,22 +89,22 @@ public class Level
 		{
 			xmlDoc.getDocumentElement().normalize();
 			
-			System.out.printf("Successfully loaded map from \"%s\"", map_path);
+			System.out.printf("Successfully loaded map from %s", map_path);
 			
 			Element layer_node = (Element) xmlDoc.getElementsByTagName("layer").item(0);
 			String width_s = layer_node.getAttribute("width");
 			String height_s = layer_node.getAttribute("height");
-			
+						
 			try
 			{
 				width_in_tiles = Integer.parseInt(width_s);
 				height_in_tiles = Integer.parseInt(height_s);
 				
-				System.out.printf("(width: %d, height: %d)\n", width_in_tiles, height_in_tiles);
+				System.out.printf(" (width: %d, height: %d)\n", width_in_tiles, height_in_tiles);
 			}
 			catch (NumberFormatException nfe)
 			{
-				System.out.println("Failed to parse map width and/or height.");
+				System.out.println("Failed to parse map width/height.");
 			}
 			
 			if (width_in_tiles > 0 && height_in_tiles > 0)
@@ -141,8 +140,6 @@ public class Level
 						// System.out.println("New tile created: " + tile);
 						tiles.add(tile);
 					}
-					
-					// System.out.println("Name: " + nodeElement.getNodeName() + "\"ID\" Value: " + nodeElement.getAttribute("gid"));
 				}
 			}
 		}
@@ -169,27 +166,38 @@ public class Level
 	{
 		for (Tile t : tiles)
 		{
-			/*if (t.getPosition().getX() > 0 && 
-				t.getPosition().getY() > 0 &&
-				t.getPosition().getX() + t.getHitbox().getWidth() <= Game.WIDTH &&
-				t.getPosition().getY() + t.getHitbox().getHeight() <= Game.HEIGHT)
-			{
-				t.render(screen);
-			}*/
-			t.render(screen);
+			boolean visible = 	t.getPosition().getX() >= 0 && t.getPosition().getX() < Game.WIDTH &&
+								t.getPosition().getY() >= 0 && t.getPosition().getY() < Game.HEIGHT;
+			
+			if (visible) t.render(screen);
 		}
+		
+		for (Entity e : entities)
+		{
+			boolean visible = 	e.getPosition().getX() >= 0 && e.getPosition().getX() < Game.WIDTH &&
+								e.getPosition().getY() >= 0 && e.getPosition().getY() < Game.HEIGHT;
+			
+			if (visible) e.render(screen);
+		}
+		
+		character.render(screen);
 	}
 	
 	public void update(double delta) 
 	{
-		List<Tile> removable = new ArrayList<Tile>();
+		// Very simple gravity
+		character.setVelocity(Vector2.add(character.getVelocity(), new Vector2(0, gravity)));
 		
 		for (Tile t : tiles)
 		{
-			if (t.isRemoved()) removable.add(t);
-			else t.update(delta);
+			t.update(delta);
+			
+			if (t.isSolid() && t.getHitbox().intersects(character.getHitbox()))
+			{
+				character.setVelocity(new Vector2(character.getVelocity().getX(), 0));
+			}
 		}
 		
-		tiles.removeAll(removable);
+		character.update(delta);
 	}
 }

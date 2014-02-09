@@ -1,5 +1,6 @@
 package no.predikament.entity;
 
+import no.predikament.Bitmap;
 import no.predikament.Game;
 import no.predikament.util.Vector2;
 
@@ -25,16 +26,16 @@ public class Entity
 		this.position = position;
 	}
 	
-	public final Vector2 getPosition()
+	public void render(Bitmap screen)
 	{
-		return position;
+		
 	}
 	
-	public void setPosition(Vector2 position)
+	public void update(double delta)
 	{
-		this.position = position;
+		
 	}
-
+	
 	public void remove() 
 	{
 		removed = true;
@@ -45,5 +46,15 @@ public class Entity
 	public boolean isRemoved() 
 	{
 		return removed;
+	}
+	
+	public final Vector2 getPosition()
+	{
+		return position;
+	}
+	
+	public void setPosition(Vector2 position)
+	{
+		this.position = position;
 	}
 }

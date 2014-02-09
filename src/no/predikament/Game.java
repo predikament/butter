@@ -33,6 +33,7 @@ public class Game extends Canvas implements Runnable
 	public static final int 	WIDTH	= 320;
 	public static final int		HEIGHT 	= (int) (WIDTH / ASP_RAT);
 	public static final int 	SCALE	= 3;
+	public static final int 	COLOR 	= 0x5FD4B1;
 	
 	private boolean running;
 	
@@ -101,16 +102,14 @@ public class Game extends Canvas implements Runnable
 	{
 		inputHandler.update(delta);
 		level.update(delta);
-		character.update(delta);
 	}
 	
 	private void render(Bitmap screen)
 	{
-		screen.clear(0x5FD4B1);
+		screen.clear(COLOR);
 		
 		level.render(screen);
-		character.render(screen);
-		
+				
 		++currentFrameCount;
 	}
 	
@@ -165,8 +164,8 @@ public class Game extends Canvas implements Runnable
 			// Increase UPS counter
 			++updatesPerSecond;
 			
-			// Try to render (approximately) at desired frame rate
-			if (frameTimer.getElapsedTime() >= (long) (1000 / FPS))
+			// Try to render at desired frame rate (approximation)
+			if (frameTimer.getElapsedTime() >= (long) 1000 / FPS)
 			{
 				render(screenBitmap);
 				
@@ -232,9 +231,7 @@ public class Game extends Canvas implements Runnable
 		
 		public synchronized void mouseClicked(MouseEvent event)
 		{
-			System.out.println("Mouse clicked at " + event.getPoint());
-			
-			System.out.println(level.getTile(event.getX() / Game.SCALE / 16, (event.getY() / Game.SCALE / 16)) + " " + level.getTile(event.getX() / Game.SCALE / 16, (event.getY() / Game.SCALE / 16)).getHitbox());
+			character.setPosition(new Vector2(event.getX() / Game.SCALE, event.getY() / Game.SCALE));		
 		}
 		
 		public synchronized void mouseEntered(MouseEvent event)
@@ -290,10 +287,12 @@ public class Game extends Canvas implements Runnable
 					{
 						case KeyEvent.VK_LEFT:
 						case KeyEvent.VK_A:
+							character.moveLeft();
 							break;
 							
 						case KeyEvent.VK_RIGHT:
 						case KeyEvent.VK_D:
+							character.moveRight();
 							break;
 							
 						case KeyEvent.VK_UP:
@@ -305,6 +304,7 @@ public class Game extends Canvas implements Runnable
 							break;
 						
 						case KeyEvent.VK_SPACE:
+							character.jump();
 							break;
 						
 						case KeyEvent.VK_ESCAPE:

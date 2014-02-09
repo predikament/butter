@@ -1,5 +1,6 @@
 package no.predikament;
 
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.util.Arrays;
@@ -318,6 +319,11 @@ public class Bitmap
 	public void drawRectangle(double x0, double y0, double x1, double y1, int color)
 	{
 		drawRectangle((int) x0, (int) y0, (int) x1, (int) y1, color);
+	}
+	
+	public void drawRectangle(Rectangle r, int color)
+	{
+		drawRectangle(r.getX(), r.getY(), r.getMaxX(), r.getMaxY(), color);
 	}
 	
 	public void drawRectangle(int x0, int y0, int x1, int y1, int color)

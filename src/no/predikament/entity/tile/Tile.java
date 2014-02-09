@@ -32,9 +32,15 @@ public class Tile extends PhysicsEntity
 	{
 		this.type = type;
 	}
+	
 	public final int getType()
 	{
 		return type;
+	}
+	
+	public final boolean isSolid()
+	{
+		return getType() > 0;
 	}
 	
 	public String toString()
