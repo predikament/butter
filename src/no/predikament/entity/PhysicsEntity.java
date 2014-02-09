@@ -55,7 +55,7 @@ public class PhysicsEntity extends Entity {
 		this.hitbox = hitbox;
 	}
 	
-	public Rectangle getHitbox() 
+	public final Rectangle getHitbox() 
 	{
 		return hitbox;
 	}
