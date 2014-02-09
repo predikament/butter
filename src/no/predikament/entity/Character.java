@@ -26,9 +26,6 @@ public class Character extends PhysicsEntity
 	
 	public void render(Bitmap screen) 
 	{
-		// Render hitbox
-		super.render(screen);
-		
 		screen.draw(Art.instance.character[0][0], getPosition().getX(), getPosition().getY());
 	}
 

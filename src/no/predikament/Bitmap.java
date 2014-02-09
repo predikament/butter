@@ -83,7 +83,7 @@ public class Bitmap
 		drawLine((int) x0, (int) y0, (int) x1, (int) y1, color);
 	}
 	
-	public void drawLine(int x0, int y0, int x1, int y1, int color)
+	public void drawLineBresenham1(int x0, int y0, int x1, int y1, int color)
 	{
 		int dx = Math.abs(x1 - x0);
 		int dy = Math.abs(y1 - y0);
@@ -160,7 +160,7 @@ public class Bitmap
 	}
 	
 	// Bresenham's (works)
-	public void drawLineBresenham(int x0, int y0, int x1, int y1, int color)
+	public void drawLine(int x0, int y0, int x1, int y1, int color)
 	{	
 		boolean steep = Math.abs(y1 - y0) > Math.abs(x1 - x0);
 		
@@ -322,12 +322,27 @@ public class Bitmap
 	
 	public void drawRectangle(int x0, int y0, int x1, int y1, int color)
 	{
-		drawLine(x0, y0, x1, y0, color);
-		drawLine(x0, y1, x1, y1, color);
-		drawLine(x0, y0, x0, y1, color);
-		drawLine(x1, y0, x1, y1, color);
+		if (x1 < x0) x0 = swap(x0, x0 = x1);
+		if (y1 < y0) y0 = swap(y0, y0 = y1);
+		
+		for (int x = x0; x < x1; ++x)
+		{
+			setPixel(x, y0, color);
+			setPixel(x, y1 - 1, color);
+			
+			if (x == x0 || x == x1 - 1)
+			{
+				for (int y = y0 + 1; y < y1; ++y) setPixel(x, y, color);
+			}
+		}
 	}
 	
+	// Used in drawRectangle() primarily
+	private int swap(int x0, int x1) 
+	{
+		return x0;
+	}
+
 	public void fill(int x0, int y0, int x1, int y1, int color)
 	{
 		if (x0 < 0) x0 = 0;

@@ -2,7 +2,6 @@ package no.predikament.entity;
 
 import java.awt.Rectangle;
 
-import no.predikament.Bitmap;
 import no.predikament.Game;
 import no.predikament.util.Vector2;
 
@@ -62,11 +61,5 @@ public class PhysicsEntity extends Entity {
 		setPosition(new Vector2(posx, posy));
 		
 		hitbox.setLocation((int) getPosition().getX(), (int) getPosition().getY());
-	}
-	
-	// Renders the hitbox
-	public void render(Bitmap screen)
-	{
-		screen.drawRectangle(getHitbox().getX(), getHitbox().getY(), getHitbox().getMaxX(), getHitbox().getMaxY(), 0xFF00FF00);
 	}
 }

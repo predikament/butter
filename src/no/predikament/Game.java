@@ -19,7 +19,6 @@ import java.util.Set;
 
 import no.predikament.entity.Camera;
 import no.predikament.entity.Character;
-import no.predikament.entity.tile.Tile;
 import no.predikament.level.Level;
 import no.predikament.util.Stopwatch;
 import no.predikament.util.Vector2;
@@ -109,13 +108,8 @@ public class Game extends Canvas implements Runnable
 	{
 		screen.clear(0x5FD4B1);
 		
-		//level.render(screen);
-		//character.render(screen);
-		
-		screen.draw(Art.instance.tiles[0][0], 0, 0);
-		//screen.drawRectangle(0, 0, 16, 16, 0xFFFF00FF);
-		screen.drawLine(16, 0, 16, 16, 0xFF00FF00);
-		screen.drawLine(0, 0, 16, 0, 0xFFAAFFAA);
+		level.render(screen);
+		character.render(screen);
 		
 		++currentFrameCount;
 	}
@@ -172,7 +166,7 @@ public class Game extends Canvas implements Runnable
 			++updatesPerSecond;
 			
 			// Try to render (approximately) at desired frame rate
-			if (frameTimer.getElapsedTime() >= 1000 / FPS)
+			if (frameTimer.getElapsedTime() >= (long) (1000 / FPS))
 			{
 				render(screenBitmap);
 				

@@ -33,6 +33,7 @@ public class Level
 	
 	private int width_in_tiles;
 	private int height_in_tiles;
+	private double gravity = -9.82;
 	
 	public Level(Game game, Character character, Camera camera)
 	{

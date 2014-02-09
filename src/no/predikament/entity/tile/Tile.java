@@ -20,9 +20,6 @@ public class Tile extends PhysicsEntity
 	
 	public void render(Bitmap screen)
 	{	
-		// Render hitbox
-		super.render(screen);
-		
 		int draw_type = getType() - 1;
 		
 		if (draw_type >= 0) 
