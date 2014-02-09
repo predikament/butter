@@ -53,6 +53,60 @@ public class Level
 				
 		loadTMXFileIntoArrayList("/maps/test.tmx", tiles);
 	}
+
+	public Tile getTile(int x, int y)
+	{
+		Tile t = null;
+		int tile_nr = width_in_tiles * y + x;
+		
+		try
+		{
+			if (tiles.isEmpty() == false && tile_nr <= tiles.size()) return tiles.get(tile_nr);
+		}
+		catch (IndexOutOfBoundsException ioobe)
+		{
+			System.out.println("getTile() tried to go out of bounds - returning null.");
+		}
+		
+		return t;
+	}
+	
+	public void render(Bitmap screen) 
+	{
+		for (Tile t : tiles)
+		{
+			boolean visible = 	t.getPosition().getX() >= 0 && t.getPosition().getX() < Game.WIDTH &&
+								t.getPosition().getY() >= 0 && t.getPosition().getY() < Game.HEIGHT;
+			
+			if (visible) t.render(screen);
+		}
+		
+		for (Entity e : entities)
+		{
+			boolean visible = 	e.getPosition().getX() >= 0 && e.getPosition().getX() < Game.WIDTH &&
+								e.getPosition().getY() >= 0 && e.getPosition().getY() < Game.HEIGHT;
+			
+			if (visible) e.render(screen);
+		}
+		
+		character.render(screen);
+	}
+	
+	public void update(double delta) 
+	{
+		// Very simple gravity
+		character.setVelocity(Vector2.add(character.getVelocity(), new Vector2(0, gravity)));
+		
+		for (Tile t : tiles)
+		{
+			if (t.isSolid() && t.getHitbox().intersects(character.getHitbox()))
+			{
+				character.setVelocity(new Vector2(character.getVelocity().getX(), 0));
+			}
+		}
+		
+		character.update(delta);
+	}
 	
 	private Document getXMLDocument(String path)
 	{
@@ -127,7 +181,7 @@ public class Level
 					}
 					catch (NumberFormatException nfe)
 					{
-						System.out.printf("Couldn't parse \"%s\" to integer. Creating empty tile.\n", tile_type_s);
+						System.out.printf("Couldn't parse \"%s\" as integer, creating empty tile.\n", tile_type_s);
 					}
 					
 					if (tile != null)
@@ -143,61 +197,5 @@ public class Level
 				}
 			}
 		}
-	}
-
-	public Tile getTile(int x, int y)
-	{
-		Tile t = null;
-		int tile_nr = width_in_tiles * y + x;
-		
-		try
-		{
-			if (tiles.isEmpty() == false && tile_nr <= tiles.size()) return tiles.get(tile_nr);
-		}
-		catch (IndexOutOfBoundsException ioobe)
-		{
-			System.out.println("getTile() tried to go out of bounds - returning null.");
-		}
-		
-		return t;
-	}
-	
-	public void render(Bitmap screen) 
-	{
-		for (Tile t : tiles)
-		{
-			boolean visible = 	t.getPosition().getX() >= 0 && t.getPosition().getX() < Game.WIDTH &&
-								t.getPosition().getY() >= 0 && t.getPosition().getY() < Game.HEIGHT;
-			
-			if (visible) t.render(screen);
-		}
-		
-		for (Entity e : entities)
-		{
-			boolean visible = 	e.getPosition().getX() >= 0 && e.getPosition().getX() < Game.WIDTH &&
-								e.getPosition().getY() >= 0 && e.getPosition().getY() < Game.HEIGHT;
-			
-			if (visible) e.render(screen);
-		}
-		
-		character.render(screen);
-	}
-	
-	public void update(double delta) 
-	{
-		// Very simple gravity
-		character.setVelocity(Vector2.add(character.getVelocity(), new Vector2(0, gravity)));
-		
-		for (Tile t : tiles)
-		{
-			t.update(delta);
-			
-			if (t.isSolid() && t.getHitbox().intersects(character.getHitbox()))
-			{
-				character.setVelocity(new Vector2(character.getVelocity().getX(), 0));
-			}
-		}
-		
-		character.update(delta);
 	}
 }

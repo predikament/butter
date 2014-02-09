@@ -33,9 +33,11 @@ public class PhysicsEntity extends Entity {
 		setHitbox(new Rectangle((int) position.getX(), (int) position.getY(), (int) size.getX(), (int) size.getY()));
 	}
 	
-	public final Vector2 getVelocity()
+	public void setPosition(Vector2 position)
 	{
-		return velocity;
+		super.setPosition(position);
+		
+		getHitbox().setLocation((int) position.getX(), (int) position.getY());
 	}
 	
 	public void setVelocity(Vector2 velocity)
@@ -43,14 +45,19 @@ public class PhysicsEntity extends Entity {
 		this.velocity = velocity;
 	}
 	
-	public Rectangle getHitbox() 
+	public final Vector2 getVelocity()
 	{
-		return hitbox;
+		return velocity;
 	}
 	
 	public void setHitbox(Rectangle hitbox) 
 	{
 		this.hitbox = hitbox;
+	}
+	
+	public Rectangle getHitbox() 
+	{
+		return hitbox;
 	}
 	
 	public void update(double delta)

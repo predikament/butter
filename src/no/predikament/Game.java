@@ -165,7 +165,7 @@ public class Game extends Canvas implements Runnable
 			++updatesPerSecond;
 			
 			// Try to render at desired frame rate (approximation)
-			if (frameTimer.getElapsedTime() >= (long) 1000 / FPS)
+			if (frameTimer.getElapsedTime() >= (long) (1000 / FPS))
 			{
 				render(screenBitmap);
 				
