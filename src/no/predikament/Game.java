@@ -204,6 +204,9 @@ public class Game extends Canvas implements Runnable
 	// Private input-handling class
 	private class InputHandler implements KeyListener, MouseListener, MouseMotionListener
 	{
+		// Need to update this so that pressedKeys remain in the hashset
+		// and I only remove releasedKeys or something similar
+		
 		private final Game game;
 		private Set<Integer> pressedKeys;
 		
