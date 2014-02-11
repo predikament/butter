@@ -13,6 +13,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import no.predikament.Art;
 import no.predikament.Bitmap;
 import no.predikament.Game;
 import no.predikament.entity.Camera;
@@ -29,6 +30,7 @@ public class Level
 	private final Camera 	camera;
 	private List<Tile> 		tiles;
 	private List<Entity> 	entities;
+	private float previousBottom;
 		
 	private int width_in_tiles;
 	private int height_in_tiles;
@@ -44,6 +46,9 @@ public class Level
 		tiles 			= new ArrayList<Tile>();
 		width_in_tiles 	= 0;
 		height_in_tiles = 0;
+		
+		// Collision related
+		previousBottom = 0;
 	}
 	
 	public void init()
@@ -78,7 +83,17 @@ public class Level
 			boolean visible = 	t.getPosition().getX() >= 0 && t.getPosition().getX() < Game.WIDTH &&
 								t.getPosition().getY() >= 0 && t.getPosition().getY() < Game.HEIGHT;
 			
-			if (visible) t.render(screen);
+			if (visible)
+			{
+				int draw_type = t.getType() - 1;
+				
+				if (draw_type >= 0) 
+				{
+					screen.draw(Art.instance.tiles[draw_type % 16][draw_type / 16], t.getPosition().getX(), t.getPosition().getY());
+				}
+				
+				t.render(screen);
+			}
 		}
 		
 		for (Entity e : entities)
@@ -94,18 +109,46 @@ public class Level
 	
 	public void update(double delta) 
 	{
+		character.update(delta);
+		
+		// Very simple friction
+		//character.setVelocity(new Vector2(character.getVelocity().getX() * 0.999, character.getVelocity().getY()));
 		// Very simple gravity
 		character.setVelocity(Vector2.add(character.getVelocity(), new Vector2(0, gravity)));
+		
+		// Collision stuff
+		character.setOnGround(false);
 		
 		for (Tile t : tiles)
 		{
 			if (t.isSolid() && t.getHitbox().intersects(character.getHitbox()))
-			{
+			{	
+				Vector2 intersection_depth = Vector2.getIntersectionDepth(character.getHitbox(), t.getHitbox());
+				
+				if (intersection_depth != Vector2.zero())
+				{
+					float absDepthX = (float) Math.abs(intersection_depth.getX());
+					float absDepthY = (float) Math.abs(intersection_depth.getY());
+					
+					if (absDepthX < absDepthY)
+					{
+						if (previousBottom <= t.getHitbox().getMinY()) character.setOnGround(true);
+						
+						if (character.isOnGround())
+						{
+							character.setPosition(Vector2.add(character.getPosition(), new Vector2(0, intersection_depth.getY())));
+						}
+						else
+						{
+							character.setPosition(Vector2.add(character.getPosition(), new Vector2(intersection_depth.getX(), 0)));
+						}
+					}
+				}
+				
 				character.setVelocity(new Vector2(character.getVelocity().getX(), 0));
+				previousBottom = (float) character.getHitbox().getMaxY();
 			}
 		}
-		
-		character.update(delta);
 	}
 	
 	private Document getXMLDocument(String path)

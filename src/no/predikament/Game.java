@@ -209,12 +209,14 @@ public class Game extends Canvas implements Runnable
 		
 		private final Game game;
 		private Set<Integer> pressedKeys;
+		private Set<Integer> releasedKeys;
 		
 		public InputHandler(Game game)
 		{
 			this.game = game;
 			
 			pressedKeys = Collections.synchronizedSet(new HashSet<Integer>());
+			releasedKeys = Collections.synchronizedSet(new HashSet<Integer>());
 			
 			game.addKeyListener(this);
 			game.addMouseListener(this);
@@ -268,9 +270,9 @@ public class Game extends Canvas implements Runnable
 		
 		public synchronized void keyReleased(KeyEvent event)
 		{
-			/*int keycode = event.getKeyCode();
+			int keycode = event.getKeyCode();
 			
-			if (pressedKeys.contains(keycode) == true) pressedKeys.remove(keycode);*/
+			if (releasedKeys.contains(keycode) == false) releasedKeys.add(keycode);
 		}
 		
 		public synchronized void keyTyped(KeyEvent event)
@@ -282,8 +284,6 @@ public class Game extends Canvas implements Runnable
 		{
 			try
 			{
-				Set<Integer> handledKeys = new HashSet<Integer>();
-				
 				for (int keycode : pressedKeys)
 				{
 					switch(keycode)
@@ -323,11 +323,11 @@ public class Game extends Canvas implements Runnable
 						default:
 							break;
 					}
-					
-					handledKeys.add(keycode);
 				}
 				
-				pressedKeys.removeAll(handledKeys);
+				pressedKeys.removeAll(releasedKeys);
+				
+				releasedKeys.clear();
 			}
 			catch (ConcurrentModificationException cme)
 			{

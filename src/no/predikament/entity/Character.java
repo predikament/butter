@@ -14,15 +14,19 @@ public class Character extends PhysicsEntity
 	private static final int HITBOX_OFFSET_X = 13;
 	private static final int HITBOX_OFFSET_Y = 10;
 	private static final int ACCELERATION_X = 2;
-	private static final int MAX_SPEED_X = 250;
-	private static final int MAX_SPEED_Y = 250;
-	private static final int JUMP_VECTOR = -100;
+	private static final int MAX_SPEED_X = 50;
+	private static final int MAX_SPEED_Y = 100;
+	private static final int JUMP_VECTOR = -300;
+
+	private boolean onGround;
 	
 	public Character(Game game)
 	{
 		super(game);
 		
 		hitbox.setSize(32, 32);
+		
+		setOnGround(false);
 	}
 	
 	public Character(Game game, Vector2 position)
@@ -45,8 +49,11 @@ public class Character extends PhysicsEntity
 		hitbox.translate(HITBOX_OFFSET_X, HITBOX_OFFSET_Y);
 		
 		// Cap velocity
-		if (getVelocity().getX() > MAX_SPEED_X) setVelocity(new Vector2(MAX_SPEED_X, getVelocity().getY()));
-		if (getVelocity().getY() > MAX_SPEED_Y) setVelocity(new Vector2(getVelocity().getX(), MAX_SPEED_Y));
+		if (Math.abs(getVelocity().getX()) > MAX_SPEED_X) 
+			setVelocity(new Vector2(getVelocity().getX() < 0 ? -MAX_SPEED_X : MAX_SPEED_X, getVelocity().getY()));
+		
+		if (Math.abs(getVelocity().getY()) > MAX_SPEED_Y) 
+			setVelocity(new Vector2(getVelocity().getX(), getVelocity().getY() < 0 ? -MAX_SPEED_Y : MAX_SPEED_Y));
 	}
 	
 	public void moveLeft()
@@ -62,5 +69,15 @@ public class Character extends PhysicsEntity
 	public void jump()
 	{
 		if (getVelocity().getY() == 0) setVelocity(Vector2.add(getVelocity(), new Vector2(0, JUMP_VECTOR)));
+	}
+
+	public final boolean isOnGround()
+	{
+		return onGround;
+	}
+	
+	public void setOnGround(boolean onGround) 
+	{
+		this.onGround = onGround;
 	}
 }
