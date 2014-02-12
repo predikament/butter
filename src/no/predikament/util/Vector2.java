@@ -1,10 +1,9 @@
 package no.predikament.util;
 
 import java.awt.Point;
-import java.awt.Rectangle;
 
 /*
- * Immutable class representing a 2D vector 
+ * Immutable 2D vector class 
  */
 
 public class Vector2 
@@ -159,33 +158,4 @@ public class Vector2
 		
 		return result;
 	}
-	
-	/// Gets intersection depth from two java.awt.Rectangles
-	public static Vector2 getIntersectionDepth(Rectangle rectA, Rectangle rectB) 
-	{
-        // Calculate half sizes.
-        float halfWidthA = (float) (rectA.getWidth() / 2.0f);
-        float halfHeightA = (float) (rectA.getHeight() / 2.0f);
-        float halfWidthB = (float) (rectB.getWidth() / 2.0f);
-        float halfHeightB = (float) (rectB.getHeight() / 2.0f);
-
-        // Calculate centers.
-        Vector2 centerA = new Vector2(rectA.getMinX() + halfWidthA, rectA.getMinY() + halfHeightA);
-        Vector2 centerB = new Vector2(rectB.getMinX() + halfWidthB, rectB.getMinY() + halfHeightB);
-
-        // Calculate current and minimum-non-intersecting distances between centers.
-        float distanceX = (float) (centerA.getX() - centerB.getX());
-        float distanceY = (float) (centerA.getY() - centerB.getY());
-        float minDistanceX = halfWidthA + halfWidthB;
-        float minDistanceY = halfHeightA + halfHeightB;
-
-        // If we are not intersecting at all, return (0, 0).
-        if (Math.abs(distanceX) >= minDistanceX || Math.abs(distanceY) >= minDistanceY)
-            return Vector2.zero();
-
-        // Calculate and return intersection depths.
-        float depthX = distanceX > 0 ? minDistanceX - distanceX : -minDistanceX - distanceX;
-        float depthY = distanceY > 0 ? minDistanceY - distanceY : -minDistanceY - distanceY;
-        return new Vector2(depthX, depthY);
-    }
 }

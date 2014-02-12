@@ -66,7 +66,7 @@ public class Level
 		
 		try
 		{
-			if (tiles.isEmpty() == false && tile_nr <= tiles.size()) return tiles.get(tile_nr);
+			if (tiles.isEmpty() == false && tile_nr <= tiles.size()) t = tiles.get(tile_nr);
 		}
 		catch (IndexOutOfBoundsException ioobe)
 		{

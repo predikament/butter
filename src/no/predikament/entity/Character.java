@@ -8,12 +8,13 @@ import no.predikament.Art;
 import no.predikament.Bitmap;
 import no.predikament.entity.tile.Tile;
 import no.predikament.level.Level;
+import no.predikament.util.RectangleExtension;
 import no.predikament.util.Stopwatch;
 import no.predikament.util.Vector2;
 
 public class Character extends PhysicsEntity 
 {
-	private static final boolean DRAW_HITBOX = false;
+	private static final boolean DRAW_HITBOX = true;
 	
 	private static final int HITBOX_WIDTH = 16;
 	private static final int HITBOX_HEIGHT = 24;
@@ -79,7 +80,7 @@ public class Character extends PhysicsEntity
 			
 			if (getHitbox().intersects(t.getHitbox()))
 			{
-				Vector2 intersection_depth = Vector2.getIntersectionDepth(getHitbox(), t.getHitbox());
+				Vector2 intersection_depth = RectangleExtension.getIntersectionDepth(getHitbox(), t.getHitbox());
 				
 				if (intersection_depth != Vector2.zero())
 				{

@@ -29,6 +29,7 @@ public class PhysicsEntity extends Entity
 		super(level, position);
 		
 		setVelocity(velocity);
+		
 		setHitbox(new Rectangle((int) position.getX(), (int) position.getY(), (int) size.getX(), (int) size.getY()));
 	}
 	
