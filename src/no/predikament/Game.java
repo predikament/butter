@@ -26,13 +26,13 @@ public class Game extends Canvas implements Runnable
 {
 	private static final long serialVersionUID = 1L;
 	
-	public static final String 	TITLE 	= "Kittens vs Marbles";
-	public static final int 	FPS 	= 60;
-	public static final double 	ASP_RAT = 16.0 / 9.0;
-	public static final int 	WIDTH	= 320;
-	public static final int		HEIGHT 	= (int) (WIDTH / ASP_RAT);
-	public static final int 	SCALE	= 3;
-	public static final int 	COLOR 	= 0x5FD4B1;
+	public static final String 	TITLE 		= "Kittens vs Marbles";
+	public static final int 	FPS 		= 60;
+	public static final double 	ASP_RAT 	= 16.0 / 9.0;
+	public static final int 	WIDTH		= 320;
+	public static final int		HEIGHT 		= (int) (WIDTH / ASP_RAT);
+	public static final int 	SCALE		= 3;
+	public static final int 	CLEARCOLOR 	= 0x5FD4B1;
 	
 	private boolean running;
 	
@@ -77,9 +77,8 @@ public class Game extends Canvas implements Runnable
 	{
 		screenImage 	= new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
 		screenBitmap 	= new Bitmap(screenImage);
-		
 		level 			= new Level(this);
-		character 		= new Character(level, Vector2.zero());
+		character 		= new Character(level);
 		
 		Art.init();
 		level.init();
@@ -106,7 +105,7 @@ public class Game extends Canvas implements Runnable
 	
 	private void render(Bitmap screen)
 	{
-		screen.clear(COLOR);
+		screen.clear(CLEARCOLOR);
 		
 		level.render(screen);
 				

@@ -1,51 +1,43 @@
 package no.predikament.entity;
 
 import no.predikament.Bitmap;
-import no.predikament.level.Level;
 import no.predikament.util.Vector2;
 
-public class Entity
+public abstract class Entity
 {
-	protected final Level level;
+	private boolean removed;	
 	protected Vector2 position;
-	private boolean removed;
 	
-	public Entity(Level level)
+	public Entity()
 	{
-		this.level = level;
-		
+		this(Vector2.zero());
+	}
+	
+	public Entity(Vector2 position)
+	{	
 		removed = false;
 		
-		position = Vector2.zero();
-	}
-	
-	public Entity(Level level, Vector2 position)
-	{
-		this(level);
-		
-		this.position = position;
-	}
-	
-	public void render(Bitmap screen)
-	{
-		
-	}
-	
-	public void update(double delta)
-	{
-		
+		setPosition(position);
 	}
 	
 	public void remove() 
 	{
-		removed = true;
-		
-		System.out.println(this + " was removed.");
+		if (isRemoved() == false)
+		{
+			removed = true;
+			
+			System.out.println(this + " was removed.");
+		}
 	}
 	
-	public boolean isRemoved() 
+	public final boolean isRemoved() 
 	{
 		return removed;
+	}
+	
+	public void setPosition(Vector2 position)
+	{
+		this.position = position;
 	}
 	
 	public final Vector2 getPosition()
@@ -53,8 +45,6 @@ public class Entity
 		return position;
 	}
 	
-	public void setPosition(Vector2 position)
-	{
-		this.position = position;
-	}
+	public abstract void render(Bitmap screen);
+	public abstract void update(double delta);
 }

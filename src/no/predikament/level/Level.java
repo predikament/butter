@@ -76,11 +76,6 @@ public class Level
 		return t;
 	}
 	
-	public double getGravity()
-	{
-		return gravity;
-	}
-	
 	public void update(double delta) 
 	{	
 		Vector2 gravity_vector = new Vector2(0, gravity);
@@ -102,8 +97,8 @@ public class Level
 	{
 		for (Tile t : tiles)
 		{
-			boolean visible = 	t.getPosition().getX() > -16 && t.getPosition().getX() < Game.WIDTH &&
-								t.getPosition().getY() >= -16 && t.getPosition().getY() < Game.HEIGHT;
+			boolean visible = 	t.getPosition().getX() > -32 && t.getPosition().getX() < Game.WIDTH &&
+								t.getPosition().getY() >= -32 && t.getPosition().getY() < Game.HEIGHT;
 			
 			if (visible)
 			{

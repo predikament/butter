@@ -1,13 +1,15 @@
 package no.predikament.entity;
 
 import java.awt.Rectangle;
+import no.predikament.Bitmap;
 import no.predikament.level.Level;
 import no.predikament.util.Vector2;
 
 public class PhysicsEntity extends Entity 
 {
-	protected Vector2 velocity;
+	protected Level level;
 	protected Rectangle hitbox;
+	protected Vector2 velocity;
 	
 	public PhysicsEntity(Level level) 
 	{
@@ -26,18 +28,12 @@ public class PhysicsEntity extends Entity
 	
 	public PhysicsEntity(Level level, Vector2 position, Vector2 velocity, Vector2 size)
 	{
-		super(level, position);
+		super(position);
 		
+		this.level = level;
+		this.hitbox = new Rectangle((int) size.getX(), (int) size.getY());
+
 		setVelocity(velocity);
-		
-		setHitbox(new Rectangle((int) position.getX(), (int) position.getY(), (int) size.getX(), (int) size.getY()));
-	}
-	
-	public void setPosition(Vector2 position)
-	{
-		super.setPosition(position);
-		
-		getHitbox().setLocation((int) getPosition().getX(), (int) getPosition().getY());
 	}
 	
 	public void setVelocity(Vector2 velocity)
@@ -60,11 +56,27 @@ public class PhysicsEntity extends Entity
 		return hitbox;
 	}
 	
+	public void setPosition(Vector2 position)
+	{
+		super.setPosition(position);
+		
+		Rectangle new_hitbox = getHitbox();
+		
+		new_hitbox.setLocation((int) getPosition().getX(), (int) getPosition().getY());
+		
+		setHitbox(new_hitbox);
+	}
+	
 	public void update(double delta)
 	{
 		double pos_x = position.getX() + (velocity.getX() * delta);
 		double pos_y = position.getY() + (velocity.getY() * delta);
 		
 		setPosition(new Vector2(pos_x, pos_y));
+	}
+	
+	public void render(Bitmap screen)
+	{
+		
 	}
 }
