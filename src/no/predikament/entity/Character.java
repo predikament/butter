@@ -11,13 +11,13 @@ public class Character extends PhysicsEntity
 {
 	private static final boolean DRAW_HITBOX = true;
 	
-	private static final int HITBOX_WIDTH = 24;
-	private static final int HITBOX_HEIGHT = 16;
+	private static final int HITBOX_WIDTH = 32;
+	private static final int HITBOX_HEIGHT = 32;
 	private static final int HITBOX_OFFSET_X = 8;
 	private static final int HITBOX_OFFSET_Y = 10;
 	private static final int ACCELERATION_X = 25;
-	private static final int MAX_SPEED_X = 100;
-	private static final int MAX_SPEED_Y = 250;
+	private static final int MAX_SPEED_X = 50;
+	private static final int MAX_SPEED_Y = 50;
 
 	
 	public Character(Level level)

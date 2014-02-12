@@ -29,7 +29,7 @@ public class RectangleExtension
 	{
 		// Calculate half sizes
 		float halfHeightA = (float) (rect_a.getHeight() / 2.0f);
-		float halfHeightB = (float) (rect_a.getHeight() / 2.0f);
+		float halfHeightB = (float) (rect_b.getHeight() / 2.0f);
 		
 		// Calculate centers
 		float centerA = (float) (rect_a.getMinY() + halfHeightA);
