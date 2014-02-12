@@ -1,37 +1,43 @@
 package no.predikament.entity;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import no.predikament.Art;
 import no.predikament.Bitmap;
-import no.predikament.Game;
+import no.predikament.entity.tile.Tile;
+import no.predikament.level.Level;
+import no.predikament.util.Stopwatch;
 import no.predikament.util.Vector2;
 
 public class Character extends PhysicsEntity 
 {
 	private static final boolean DRAW_HITBOX = false;
 	
-	private static final int HITBOX_WIDTH = 7;
-	private static final int HITBOX_HEIGHT = 23;
-	private static final int HITBOX_OFFSET_X = 13;
-	private static final int HITBOX_OFFSET_Y = 10;
-	private static final int ACCELERATION_X = 2;
-	private static final int MAX_SPEED_X = 50;
-	private static final int MAX_SPEED_Y = 100;
-	private static final int JUMP_VECTOR = -300;
+	private static final int HITBOX_WIDTH = 16;
+	private static final int HITBOX_HEIGHT = 24;
+	private static final int HITBOX_OFFSET_X = 8;
+	private static final int HITBOX_OFFSET_Y = 8;
+	private static final int ACCELERATION_X = 25;
+	private static final int MAX_SPEED_X = 100;
+	private static final int MAX_SPEED_Y = 250;
+	private static final int JUMP_TIME = 500;
 
+	private Stopwatch jumpTimer;
 	private boolean onGround;
 	
-	public Character(Game game)
+	public Character(Level level)
 	{
-		super(game);
-		
-		hitbox.setSize(32, 32);
-		
-		setOnGround(false);
+		this(level, Vector2.zero());
 	}
 	
-	public Character(Game game, Vector2 position)
+	public Character(Level level, Vector2 position)
 	{
-		super(game, position, Vector2.zero(), new Vector2(HITBOX_WIDTH, HITBOX_HEIGHT));
+		super(level, position, Vector2.zero(), new Vector2(HITBOX_WIDTH, HITBOX_HEIGHT));
+		
+		jumpTimer = new Stopwatch(true);
+		setOnGround(false);
 	}
 	
 	public void render(Bitmap screen) 
@@ -40,20 +46,82 @@ public class Character extends PhysicsEntity
 		
 		if (DRAW_HITBOX) screen.drawRectangle(getHitbox(), 0xFF00FF00);
 	}
-
-	public void update(double delta) 
+	
+	public void update(double delta)
 	{
 		super.update(delta);
-
+		
+		// Collision stuff		
+		List<Tile> collidableTiles = new ArrayList<Tile>();
+		
+		for (int x = -1; x <= 1; ++x)
+		{
+			for (int y = -1; y <= 1; ++y)
+			{
+				int t_x = (int) ((getHitbox().getCenterX() / 16) + x);
+				int t_y = (int) ((getHitbox().getCenterY() / 16) + y);
+				
+				Tile t = level.getTile(t_x, t_y);
+				
+				if (t != null && t.isSolid()) collidableTiles.add(t);
+			}
+		}
+		
+		Vector2 previous_position = getPosition();
+		Iterator<Tile> tile_iterator = collidableTiles.iterator();
+		int attempt = 0;
+		
+		while (tile_iterator.hasNext() && attempt < collidableTiles.size() * 2)
+		{
+			++attempt;
+			
+			Tile t = tile_iterator.next();
+			
+			if (getHitbox().intersects(t.getHitbox()))
+			{
+				Vector2 intersection_depth = Vector2.getIntersectionDepth(getHitbox(), t.getHitbox());
+				
+				if (intersection_depth != Vector2.zero())
+				{
+					// If we have a collision we reset to the first tile and re-check them all
+					tile_iterator = collidableTiles.iterator();
+					
+					double absDepthX = Math.abs(intersection_depth.getX());
+					double absDepthY = Math.abs(intersection_depth.getY());
+					
+					if (absDepthY < absDepthX)
+					{
+						setPosition(Vector2.add(getPosition(), new Vector2(0, intersection_depth.getY())));
+					}
+					else
+					{
+						setPosition(Vector2.add(getPosition(), new Vector2(intersection_depth.getX(), 0)));
+					}
+				}
+			}
+		}
+		
+		if (previous_position.getX() != getPosition().getX()) setVelocity(new Vector2(0, getVelocity().getY()));
+		else if (previous_position.getY() != getPosition().getY()) setVelocity(new Vector2(getVelocity().getX(), 0));
+	}
+	
+	public void setPosition(Vector2 position)
+	{
+		super.setPosition(position);
+		
 		// Translate hitbox by offset to match sprite bounds
 		hitbox.translate(HITBOX_OFFSET_X, HITBOX_OFFSET_Y);
+	}
+	
+	public void setVelocity(Vector2 velocity)
+	{
+		if (Math.abs(velocity.getX()) > MAX_SPEED_X) velocity = new Vector2(velocity.getX() > 0 ? MAX_SPEED_X : -MAX_SPEED_X, velocity.getY());
+		if (Math.abs(velocity.getY()) > MAX_SPEED_Y) velocity = new Vector2(velocity.getX(), velocity.getY() > 0 ? MAX_SPEED_Y : -MAX_SPEED_Y);
 		
-		// Cap velocity
-		if (Math.abs(getVelocity().getX()) > MAX_SPEED_X) 
-			setVelocity(new Vector2(getVelocity().getX() < 0 ? -MAX_SPEED_X : MAX_SPEED_X, getVelocity().getY()));
+		if (velocity.getY() == 0) setOnGround(true);
+		else setOnGround(false);
 		
-		if (Math.abs(getVelocity().getY()) > MAX_SPEED_Y) 
-			setVelocity(new Vector2(getVelocity().getX(), getVelocity().getY() < 0 ? -MAX_SPEED_Y : MAX_SPEED_Y));
+		super.setVelocity(velocity);
 	}
 	
 	public void moveLeft()
@@ -68,15 +136,22 @@ public class Character extends PhysicsEntity
 	
 	public void jump()
 	{
-		if (getVelocity().getY() == 0) setVelocity(Vector2.add(getVelocity(), new Vector2(0, JUMP_VECTOR)));
+		if (isOnGround() && jumpTimer.getElapsedTime() >= JUMP_TIME)
+		{
+			jumpTimer.reset();
+			
+			setOnGround(false);
+			
+			setVelocity(Vector2.add(getVelocity(), new Vector2(0, -MAX_SPEED_Y)));
+		}
 	}
-
+	
 	public final boolean isOnGround()
 	{
 		return onGround;
 	}
 	
-	public void setOnGround(boolean onGround) 
+	private void setOnGround(boolean onGround) 
 	{
 		this.onGround = onGround;
 	}

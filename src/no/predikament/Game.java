@@ -17,7 +17,6 @@ import java.util.ConcurrentModificationException;
 import java.util.HashSet;
 import java.util.Set;
 
-import no.predikament.entity.Camera;
 import no.predikament.entity.Character;
 import no.predikament.level.Level;
 import no.predikament.util.Stopwatch;
@@ -50,7 +49,6 @@ public class Game extends Canvas implements Runnable
 	
 	private Character character;
 	private Level level;
-	private Camera camera;
 	
 	public Game()
 	{
@@ -80,12 +78,13 @@ public class Game extends Canvas implements Runnable
 		screenImage 	= new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
 		screenBitmap 	= new Bitmap(screenImage);
 		
-		character 		= new Character(this, Vector2.zero());
-		camera 			= new Camera(this, Vector2.zero(), new Vector2(5, 5));
-		level 			= new Level(this, character, camera);
+		level 			= new Level(this);
+		character 		= new Character(level, Vector2.zero());
 		
 		Art.init();
 		level.init();
+		
+		level.addEntity(character);
 	}
 	
 	public void start()
@@ -101,6 +100,7 @@ public class Game extends Canvas implements Runnable
 	private void update(double delta)
 	{
 		inputHandler.update(delta);
+		
 		level.update(delta);
 	}
 	

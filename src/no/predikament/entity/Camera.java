@@ -1,34 +1,22 @@
 package no.predikament.entity;
 
-import no.predikament.Game;
+import no.predikament.level.Level;
 import no.predikament.util.Vector2;
 
-public class Camera extends Entity 
+public class Camera extends PhysicsEntity 
 {
-	protected Vector2 size;
-	
-	public Camera(Game game)
+	public Camera(Level level)
 	{
-		super(game);
-		
-		setSize(new Vector2(1, 1));
+		this(level, Vector2.zero(), Vector2.zero());
 	}
 	
-	public Camera(Game game, Vector2 position, Vector2 size)
+	public Camera(Level level, Vector2 position)
 	{
-		super(game, position);
-		
-		setSize(size);
+		this(level, position, Vector2.zero());
 	}
 	
-	public Vector2 getSize() 
+	public Camera(Level level, Vector2 position, Vector2 size)
 	{
-		return size;
-	}
-
-	public void setSize(Vector2 size) 
-	{
-		if (size.getX() >= 0 && size.getY() >= 0) this.size = size;
-		else this.size = new Vector2(1, 1);
+		super(level, position, Vector2.zero(), size);
 	}
 }

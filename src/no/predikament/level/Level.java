@@ -16,47 +16,47 @@ import org.w3c.dom.NodeList;
 import no.predikament.Art;
 import no.predikament.Bitmap;
 import no.predikament.Game;
-import no.predikament.entity.Camera;
-import no.predikament.entity.Character;
 import no.predikament.entity.Entity;
+import no.predikament.entity.PhysicsEntity;
 import no.predikament.entity.tile.Tile;
 import no.predikament.util.Vector2;
 
 public class Level 
 {
-	private final Game 		game;
-	private final Character character;
 	@SuppressWarnings("unused")
-	private final Camera 	camera;
+	private final Game 		game;
 	private List<Tile> 		tiles;
 	private List<Entity> 	entities;
-	private float previousBottom;
-		
 	private int width_in_tiles;
 	private int height_in_tiles;
 	private double gravity = 9.82;
 	
-	public Level(Game game, Character character, Camera camera)
+	public Level(Game game)
 	{
 		this.game = game;
-		this.camera = camera;
-		this.character = character;
 		
 		entities 		= new ArrayList<Entity>();
 		tiles 			= new ArrayList<Tile>();
 		width_in_tiles 	= 0;
 		height_in_tiles = 0;
-		
-		// Collision related
-		previousBottom = 0;
 	}
 	
 	public void init()
 	{
 		tiles.clear();
 		entities.clear();
-				
+
 		loadTMXFileIntoArrayList("/maps/test.tmx", tiles);
+	}
+	
+	public void addEntity(Entity e)
+	{
+		if (entities.contains(e) == false) entities.add(e);
+	}
+	
+	public void removeEntity(Entity e)
+	{
+		if (entities.contains(e) == true) entities.remove(e);
 	}
 
 	public Tile getTile(int x, int y)
@@ -70,18 +70,40 @@ public class Level
 		}
 		catch (IndexOutOfBoundsException ioobe)
 		{
-			System.out.println("getTile() tried to go out of bounds - returning null.");
+			// System.out.println("getTile() tried to go out of bounds - returning null.");
 		}
 		
 		return t;
+	}
+	
+	public double getGravity()
+	{
+		return gravity;
+	}
+	
+	public void update(double delta) 
+	{	
+		Vector2 gravity_vector = new Vector2(0, gravity);
+		
+		for (Tile t : tiles) t.update(delta);
+		
+		for (Entity e : entities)
+		{
+			if (e instanceof PhysicsEntity)
+			{
+				((PhysicsEntity) e).setVelocity(Vector2.add(((PhysicsEntity) e).getVelocity(), gravity_vector));
+			}
+			
+			e.update(delta);
+		}
 	}
 	
 	public void render(Bitmap screen) 
 	{
 		for (Tile t : tiles)
 		{
-			boolean visible = 	t.getPosition().getX() >= 0 && t.getPosition().getX() < Game.WIDTH &&
-								t.getPosition().getY() >= 0 && t.getPosition().getY() < Game.HEIGHT;
+			boolean visible = 	t.getPosition().getX() > -16 && t.getPosition().getX() < Game.WIDTH &&
+								t.getPosition().getY() >= -16 && t.getPosition().getY() < Game.HEIGHT;
 			
 			if (visible)
 			{
@@ -91,63 +113,15 @@ public class Level
 				{
 					screen.draw(Art.instance.tiles[draw_type % 16][draw_type / 16], t.getPosition().getX(), t.getPosition().getY());
 				}
-				
-				t.render(screen);
 			}
 		}
 		
 		for (Entity e : entities)
 		{
-			boolean visible = 	e.getPosition().getX() >= 0 && e.getPosition().getX() < Game.WIDTH &&
-								e.getPosition().getY() >= 0 && e.getPosition().getY() < Game.HEIGHT;
+			boolean visible = 	e.getPosition().getX() > -32 && e.getPosition().getX() < Game.WIDTH &&
+								e.getPosition().getY() > -32 && e.getPosition().getY() < Game.HEIGHT;
 			
 			if (visible) e.render(screen);
-		}
-		
-		character.render(screen);
-	}
-	
-	public void update(double delta) 
-	{
-		character.update(delta);
-		
-		// Very simple friction
-		//character.setVelocity(new Vector2(character.getVelocity().getX() * 0.999, character.getVelocity().getY()));
-		// Very simple gravity
-		character.setVelocity(Vector2.add(character.getVelocity(), new Vector2(0, gravity)));
-		
-		// Collision stuff
-		character.setOnGround(false);
-		
-		for (Tile t : tiles)
-		{
-			if (t.isSolid() && t.getHitbox().intersects(character.getHitbox()))
-			{	
-				Vector2 intersection_depth = Vector2.getIntersectionDepth(character.getHitbox(), t.getHitbox());
-				
-				if (intersection_depth != Vector2.zero())
-				{
-					float absDepthX = (float) Math.abs(intersection_depth.getX());
-					float absDepthY = (float) Math.abs(intersection_depth.getY());
-					
-					if (absDepthX < absDepthY)
-					{
-						if (previousBottom <= t.getHitbox().getMinY()) character.setOnGround(true);
-						
-						if (character.isOnGround())
-						{
-							character.setPosition(Vector2.add(character.getPosition(), new Vector2(0, intersection_depth.getY())));
-						}
-						else
-						{
-							character.setPosition(Vector2.add(character.getPosition(), new Vector2(intersection_depth.getX(), 0)));
-						}
-					}
-				}
-				
-				character.setVelocity(new Vector2(character.getVelocity().getX(), 0));
-				previousBottom = (float) character.getHitbox().getMaxY();
-			}
 		}
 	}
 	
@@ -220,7 +194,7 @@ public class Level
 					{
 						tile_type = Integer.parseInt(tile_type_s);
 						
-						tile = new Tile(game, tile_type);
+						tile = new Tile(this, tile_type);
 					}
 					catch (NumberFormatException nfe)
 					{

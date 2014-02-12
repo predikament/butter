@@ -1,33 +1,32 @@
 package no.predikament.entity;
 
 import java.awt.Rectangle;
-
-import no.predikament.Game;
+import no.predikament.level.Level;
 import no.predikament.util.Vector2;
 
-public class PhysicsEntity extends Entity {
-
+public class PhysicsEntity extends Entity 
+{
 	protected Vector2 velocity;
 	protected Rectangle hitbox;
 	
-	public PhysicsEntity(Game game) 
+	public PhysicsEntity(Level level) 
 	{
-		this(game, Vector2.zero());
+		this(level, Vector2.zero());
 	}
 
-	public PhysicsEntity(Game game, Vector2 position) 
+	public PhysicsEntity(Level level, Vector2 position) 
 	{
-		this(game, position, Vector2.zero());
+		this(level, position, Vector2.zero());
 	}
 	
-	public PhysicsEntity(Game game, Vector2 position, Vector2 velocity)
+	public PhysicsEntity(Level level, Vector2 position, Vector2 velocity)
 	{
-		this(game, position, velocity, new Vector2(1, 1));
+		this(level, position, velocity, new Vector2(1, 1));
 	}
 	
-	public PhysicsEntity(Game game, Vector2 position, Vector2 velocity, Vector2 size)
+	public PhysicsEntity(Level level, Vector2 position, Vector2 velocity, Vector2 size)
 	{
-		super(game, position);
+		super(level, position);
 		
 		setVelocity(velocity);
 		setHitbox(new Rectangle((int) position.getX(), (int) position.getY(), (int) size.getX(), (int) size.getY()));
@@ -37,7 +36,7 @@ public class PhysicsEntity extends Entity {
 	{
 		super.setPosition(position);
 		
-		getHitbox().setLocation((int) position.getX(), (int) position.getY());
+		getHitbox().setLocation((int) getPosition().getX(), (int) getPosition().getY());
 	}
 	
 	public void setVelocity(Vector2 velocity)
@@ -62,11 +61,9 @@ public class PhysicsEntity extends Entity {
 	
 	public void update(double delta)
 	{
-		double posx = position.getX() + (velocity.getX() * delta);
-		double posy = position.getY() + (velocity.getY() * delta);
+		double pos_x = position.getX() + (velocity.getX() * delta);
+		double pos_y = position.getY() + (velocity.getY() * delta);
 		
-		setPosition(new Vector2(posx, posy));
-		
-		hitbox.setLocation((int) getPosition().getX(), (int) getPosition().getY());
+		setPosition(new Vector2(pos_x, pos_y));
 	}
 }

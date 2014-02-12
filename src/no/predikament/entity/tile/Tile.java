@@ -1,15 +1,15 @@
 package no.predikament.entity.tile;
 
-import no.predikament.Game;
 import no.predikament.entity.PhysicsEntity;
+import no.predikament.level.Level;
 
 public class Tile extends PhysicsEntity 
 {
 	protected int type;
 	
-	public Tile(Game game, int type)
+	public Tile(Level level, int type)
 	{
-		super(game);
+		super(level);
 		
 		this.type = type;
 		

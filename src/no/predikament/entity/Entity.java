@@ -1,27 +1,27 @@
 package no.predikament.entity;
 
 import no.predikament.Bitmap;
-import no.predikament.Game;
+import no.predikament.level.Level;
 import no.predikament.util.Vector2;
 
 public class Entity
 {
-	protected final Game game;
+	protected final Level level;
 	protected Vector2 position;
 	private boolean removed;
 	
-	public Entity(Game game)
+	public Entity(Level level)
 	{
-		this.game = game;
+		this.level = level;
 		
 		removed = false;
 		
 		position = Vector2.zero();
 	}
 	
-	public Entity(Game game, Vector2 position)
+	public Entity(Level level, Vector2 position)
 	{
-		this(game);
+		this(level);
 		
 		this.position = position;
 	}

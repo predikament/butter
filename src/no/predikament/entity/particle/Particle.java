@@ -1,14 +1,14 @@
 package no.predikament.entity.particle;
 
-import no.predikament.Game;
 import no.predikament.entity.Entity;
+import no.predikament.level.Level;
 
 public class Particle extends Entity 
 {
 
-	public Particle(Game game) 
+	public Particle(Level level) 
 	{
-		super(game);
+		super(level);
 	}
 
 }
