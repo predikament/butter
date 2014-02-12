@@ -1,5 +1,6 @@
 package no.predikament.entity;
 
+
 import java.awt.Rectangle;
 import no.predikament.Bitmap;
 import no.predikament.level.Level;
@@ -30,10 +31,19 @@ public class PhysicsEntity extends Entity
 	{
 		super(position);
 		
-		this.level = level;
-		this.hitbox = new Rectangle((int) size.getX(), (int) size.getY());
-
+		setHitbox(new Rectangle((int) size.getX(), (int) size.getY()));
 		setVelocity(velocity);
+	}
+	
+	public void setPosition(Vector2 new_position)
+	{
+		super.setPosition(new_position);
+		
+		Rectangle new_hitbox = getHitbox();
+		
+		new_hitbox.setLocation((int) getPosition().getX(), (int) getPosition().getY());
+		
+		setHitbox(new_hitbox);
 	}
 	
 	public void setVelocity(Vector2 velocity)
@@ -54,17 +64,6 @@ public class PhysicsEntity extends Entity
 	public final Rectangle getHitbox() 
 	{
 		return hitbox;
-	}
-	
-	public void setPosition(Vector2 position)
-	{
-		super.setPosition(position);
-		
-		Rectangle new_hitbox = getHitbox();
-		
-		new_hitbox.setLocation((int) getPosition().getX(), (int) getPosition().getY());
-		
-		setHitbox(new_hitbox);
 	}
 	
 	public void update(double delta)

@@ -33,14 +33,6 @@ public class Character extends PhysicsEntity
 		if (DRAW_HITBOX) screen.drawRectangle(getHitbox(), 0xFF00FF00);
 	}
 	
-	public void setPosition(Vector2 position)
-	{
-		super.setPosition(position);
-		
-		// Translate hitbox by offsets to match sprite bounds
-		hitbox.translate(5, 5);
-	}
-	
 	public void setVelocity(Vector2 velocity)
 	{
 		if (Math.abs(velocity.getX()) > MAX_SPEED_X) velocity = new Vector2(velocity.getX() > 0 ? MAX_SPEED_X : -MAX_SPEED_X, velocity.getY());
