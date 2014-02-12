@@ -1,5 +1,7 @@
 package no.predikament.entity;
 
+import java.awt.Rectangle;
+
 import no.predikament.Art;
 import no.predikament.Bitmap;
 import no.predikament.level.Level;
@@ -9,8 +11,10 @@ public class Character extends PhysicsEntity
 {
 	private static final boolean DRAW_HITBOX = true;
 	
-	private static final int HITBOX_WIDTH = 32;
-	private static final int HITBOX_HEIGHT = 32;
+	private static final int HITBOX_WIDTH = 24;
+	private static final int HITBOX_HEIGHT = 16;
+	private static final int HITBOX_OFFSET_X = 8;
+	private static final int HITBOX_OFFSET_Y = 10;
 	private static final int ACCELERATION_X = 25;
 	private static final int MAX_SPEED_X = 100;
 	private static final int MAX_SPEED_Y = 250;
@@ -40,6 +44,13 @@ public class Character extends PhysicsEntity
 		
 		super.setVelocity(velocity);
 	}
+	
+	/*public void setHitbox(Rectangle hitbox)
+	{
+		hitbox.translate(HITBOX_OFFSET_X, HITBOX_OFFSET_Y);
+		
+		super.setHitbox(hitbox);
+	}*/
 	
 	public void moveLeft()
 	{

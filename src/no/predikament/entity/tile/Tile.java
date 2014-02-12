@@ -13,6 +13,8 @@ public class Tile extends PhysicsEntity
 		
 		this.type = type;
 		
+		if (getType() == 0) setSolid(false);
+		
 		hitbox.setSize(16, 16);
 	}
 		
@@ -24,11 +26,6 @@ public class Tile extends PhysicsEntity
 	public final int getType()
 	{
 		return type;
-	}
-	
-	public final boolean isSolid()
-	{
-		return getType() > 0;
 	}
 	
 	public String toString()

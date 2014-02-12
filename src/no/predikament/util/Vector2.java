@@ -133,6 +133,11 @@ public class Vector2
 	{
 		return new Vector2(0, 0);
 	}
+	
+	public final Point asPoint()
+	{
+		return new Point((int) this.getX(), (int) this.getY());
+	}
 
 	public static Vector2 radianToVector(double rad)
 	{

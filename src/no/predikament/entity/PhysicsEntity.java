@@ -2,14 +2,18 @@ package no.predikament.entity;
 
 
 import java.awt.Rectangle;
+import java.util.ArrayList;
+
 import no.predikament.Bitmap;
 import no.predikament.level.Level;
+import no.predikament.util.RectangleExtension;
 import no.predikament.util.Vector2;
 
 public class PhysicsEntity extends Entity 
 {
 	protected Level level;
 	protected Rectangle hitbox;
+	protected boolean solid;
 	protected Vector2 velocity;
 	
 	public PhysicsEntity(Level level) 
@@ -31,19 +35,12 @@ public class PhysicsEntity extends Entity
 	{
 		super(position);
 		
+		this.level = level;
+		
+		solid = true;
+		
 		setHitbox(new Rectangle((int) size.getX(), (int) size.getY()));
 		setVelocity(velocity);
-	}
-	
-	public void setPosition(Vector2 new_position)
-	{
-		super.setPosition(new_position);
-		
-		Rectangle new_hitbox = getHitbox();
-		
-		new_hitbox.setLocation((int) getPosition().getX(), (int) getPosition().getY());
-		
-		setHitbox(new_hitbox);
 	}
 	
 	public void setVelocity(Vector2 velocity)
@@ -71,11 +68,77 @@ public class PhysicsEntity extends Entity
 		double pos_x = position.getX() + (velocity.getX() * delta);
 		double pos_y = position.getY() + (velocity.getY() * delta);
 		
-		setPosition(new Vector2(pos_x, pos_y));
+		Vector2 new_position = new Vector2(pos_x, pos_y); 
+		Rectangle new_hitbox = getHitbox();
+		
+		new_hitbox.setLocation(new_position.asPoint());
+		
+		setPosition(new_position);
+		setHitbox(new_hitbox);
+		
+		handleCollisions();
+	}
+	
+	public void handleCollisions()
+	{
+		ArrayList<PhysicsEntity> tiles = new ArrayList<PhysicsEntity>();
+		
+		// Check for tile collisions
+		for (int x = -1; x <= 1; ++x)
+		{
+			for (int y = -1; y <= 1; ++y)
+			{
+				PhysicsEntity p = level.getTile((int) (hitbox.getCenterX() / 16) + x, (int) (hitbox.getCenterY() / 16) + y);
+				
+				if (p != null && p != this && p.isSolid()) tiles.add(p);
+			}
+		}
+		
+		for (PhysicsEntity p : tiles)
+		{
+			if (this.hitbox.intersects(p.hitbox))
+			{
+				Vector2 new_position = getPosition();
+				Vector2 new_velocity = getVelocity();
+				Rectangle new_hitbox = getHitbox();
+				
+				float horizontal_depth = RectangleExtension.getHorizontalIntersectionDepth(new_hitbox, p.hitbox);
+				
+				if (horizontal_depth != 0f)
+				{
+					new_position = new Vector2(getPosition().getX() + horizontal_depth, getPosition().getY());
+					new_velocity = new Vector2(0, getVelocity().getY());
+					new_hitbox.setLocation(new_position.asPoint());
+				}
+				
+				float vertical_depth = RectangleExtension.getVerticalIntersectionDepth(new_hitbox, p.hitbox);
+				
+				if (vertical_depth != 0f)
+				{
+					new_position = new Vector2(new_position.getX(), new_position.getY() + vertical_depth);
+					new_velocity = new Vector2(new_velocity.getX(), 0);
+					new_hitbox.setLocation(new_position.asPoint());	
+				}
+				
+				setPosition(new_position);
+				setVelocity(new_velocity);
+				setHitbox(new_hitbox);
+			}
+		}
 	}
 	
 	public void render(Bitmap screen)
 	{
 		
+	}
+	
+	public void setSolid(boolean solid)
+	{
+		this.solid = solid;
+	}
+	
+	public final boolean isSolid()
+	{
+		return solid;
 	}
 }
