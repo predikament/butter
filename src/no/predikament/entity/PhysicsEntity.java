@@ -91,10 +91,14 @@ public class PhysicsEntity extends Entity
 			{
 				PhysicsEntity p = level.getTile((int) (hitbox.getCenterX() / 16) + x, (int) (hitbox.getCenterY() / 16) + y);
 				
-				if (p != null && p != this && 
-					p.isSolid() && this.hitbox.intersects(p.hitbox)) tiles.add(p);
+				if (p != null && p != this && p.isSolid() && this.hitbox.intersects(p.hitbox))
+				{
+					tiles.add(p);
+				}
 			}
 		}
+		
+		if (tiles.size() > 0) System.out.println("Colliding tiles found: " + tiles.size());
 		
 		Vector2 new_position = getPosition();
 		Vector2 new_velocity = getVelocity();
@@ -103,29 +107,26 @@ public class PhysicsEntity extends Entity
 		// Handle collisions with collidable tiles for now
 		for (PhysicsEntity p : tiles)
 		{
-			// Horizontal collisions
-			float horizontal_depth = RectangleExtension.getHorizontalIntersectionDepth(new_hitbox, p.hitbox);
-			
-			if (horizontal_depth != 0)
-			{
-				System.out.println("Horizontal collision!");
-				
-				new_position = new Vector2(new_position.getX() + horizontal_depth, new_position.getY());
-				new_velocity = new Vector2(0, new_velocity.getY());
-				new_hitbox.setLocation(new_position.asPoint());
-			}
-			
 			// Vertical collisions
 			float vertical_depth = RectangleExtension.getVerticalIntersectionDepth(new_hitbox, p.hitbox);
 			
 			if (vertical_depth != 0)
 			{
-				System.out.println("Vertical collision!");
-				
 				new_position = new Vector2(new_position.getX(), new_position.getY() + vertical_depth);
 				new_velocity = new Vector2(new_velocity.getX(), 0);
 				new_hitbox.setLocation(new_position.asPoint());
 			}
+			
+			// Horizontal collisions
+			float horizontal_depth = RectangleExtension.getHorizontalIntersectionDepth(new_hitbox, p.hitbox);
+			
+			if (horizontal_depth != 0)
+			{		
+				new_position = new Vector2(new_position.getX() + horizontal_depth, new_position.getY());
+				new_velocity = new Vector2(0, new_velocity.getY());
+				new_hitbox.setLocation(new_position.asPoint());
+			}
+
 			
 			setPosition(new_position);
 			setVelocity(new_velocity);

@@ -62,15 +62,12 @@ public class Level
 	public Tile getTile(int x, int y)
 	{
 		Tile t = null;
-		int tile_nr = width_in_tiles * y + x;
 		
-		try
+		if (x >= 0 && x < width_in_tiles && y >= 0 && y < height_in_tiles)
 		{
-			if (tiles.isEmpty() == false && tile_nr <= tiles.size()) t = tiles.get(tile_nr);
-		}
-		catch (IndexOutOfBoundsException ioobe)
-		{
-			// System.out.println("getTile() tried to go out of bounds - returning null.");
+			int tile_nr = width_in_tiles * y + x;
+		
+			t = tiles.get(tile_nr);
 		}
 		
 		return t;
@@ -108,6 +105,9 @@ public class Level
 				{
 					screen.draw(Art.instance.tiles[draw_type % 16][draw_type / 16], t.getPosition().getX(), t.getPosition().getY());
 				}
+				
+				// Drawing hitboxes while testing
+				screen.drawRectangle(t.getHitbox(), 0xFF00FF00);
 			}
 		}
 		
