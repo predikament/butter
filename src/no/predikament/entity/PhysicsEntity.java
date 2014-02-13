@@ -85,11 +85,11 @@ public class PhysicsEntity extends Entity
 		ArrayList<PhysicsEntity> tiles = new ArrayList<PhysicsEntity>();
 		
 		// Find colliding tiles
-		for (int y = -1; y <= 1; ++y)
+		for (int x = -1; x <= 1; ++x)
 		{
-			for (int x = -1; x <= 1; ++x)
+			for (int y = -1; y <= 1; ++y)
 			{
-				PhysicsEntity p = level.getTile((int) (hitbox.getCenterX() / 16) + y, (int) (hitbox.getCenterY() / 16) + x);
+				PhysicsEntity p = level.getTile((int) (hitbox.getCenterX() / 16) + x, (int) (hitbox.getCenterY() / 16) + y);
 				
 				if (p != null && p != this && 
 					p.isSolid() && this.hitbox.intersects(p.hitbox)) tiles.add(p);
@@ -103,18 +103,6 @@ public class PhysicsEntity extends Entity
 		// Handle collisions with collidable tiles for now
 		for (PhysicsEntity p : tiles)
 		{
-			// Vertical collisions
-			float vertical_depth = RectangleExtension.getVerticalIntersectionDepth(new_hitbox, p.hitbox);
-			
-			if (vertical_depth != 0)
-			{
-				System.out.println("Vertical collision!");
-				
-				new_position = new Vector2(new_position.getX(), new_position.getY() + vertical_depth);
-				new_velocity = new Vector2(new_velocity.getX(), 0);
-				new_hitbox.setLocation(new_position.asPoint());
-			}
-			
 			// Horizontal collisions
 			float horizontal_depth = RectangleExtension.getHorizontalIntersectionDepth(new_hitbox, p.hitbox);
 			
@@ -124,6 +112,18 @@ public class PhysicsEntity extends Entity
 				
 				new_position = new Vector2(new_position.getX() + horizontal_depth, new_position.getY());
 				new_velocity = new Vector2(0, new_velocity.getY());
+				new_hitbox.setLocation(new_position.asPoint());
+			}
+			
+			// Vertical collisions
+			float vertical_depth = RectangleExtension.getVerticalIntersectionDepth(new_hitbox, p.hitbox);
+			
+			if (vertical_depth != 0)
+			{
+				System.out.println("Vertical collision!");
+				
+				new_position = new Vector2(new_position.getX(), new_position.getY() + vertical_depth);
+				new_velocity = new Vector2(new_velocity.getX(), 0);
 				new_hitbox.setLocation(new_position.asPoint());
 			}
 			
