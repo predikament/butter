@@ -15,6 +15,12 @@ public class PhysicsEntity extends Entity
 	protected Rectangle hitbox;
 	protected boolean solid;
 	protected Vector2 velocity;
+	private enum Direction
+	{
+		HORIZONTAL,
+		VERTICAL,
+		END
+	};
 	
 	public PhysicsEntity(Level level) 
 	{
@@ -65,22 +71,26 @@ public class PhysicsEntity extends Entity
 	
 	public void update(double delta)
 	{
-		double pos_x = position.getX() + (velocity.getX() * delta);
-		double pos_y = position.getY() + (velocity.getY() * delta);
+		double add_x = velocity.getX() * delta;
+		double add_y = velocity.getY() * delta;
 		
-		Vector2 new_position = new Vector2(pos_x, pos_y); 
 		Rectangle new_hitbox = getHitbox();
 		
-		setPosition(new_position);
-		
-		new_hitbox.setLocation(new_position.asPoint());
-
+		setPosition(Vector2.add(getPosition(), new Vector2(0, add_y)));
+		new_hitbox.setLocation(getPosition().asPoint());
 		setHitbox(new_hitbox);
 		
-		handleCollisions();
+		handleCollisions(Direction.VERTICAL);
+		
+		
+		setPosition(Vector2.add(getPosition(), new Vector2(add_x, 0)));
+		new_hitbox.setLocation(getPosition().asPoint());
+		setHitbox(new_hitbox);
+		
+		handleCollisions(Direction.HORIZONTAL);
 	}
 	
-	public void handleCollisions()
+	public void handleCollisions(Direction direction)
 	{
 		ArrayList<PhysicsEntity> tiles = new ArrayList<PhysicsEntity>();
 		
@@ -98,7 +108,7 @@ public class PhysicsEntity extends Entity
 			}
 		}
 		
-		if (tiles.size() > 0) System.out.println("Colliding tiles found: " + tiles.size());
+		// if (tiles.size() > 0) System.out.println("Colliding tiles found: " + tiles.size());
 		
 		Vector2 new_position = getPosition();
 		Vector2 new_velocity = getVelocity();
@@ -108,23 +118,28 @@ public class PhysicsEntity extends Entity
 		for (PhysicsEntity p : tiles)
 		{
 			// Vertical collisions
-			float vertical_depth = RectangleExtension.getVerticalIntersectionDepth(new_hitbox, p.hitbox);
-			
-			if (vertical_depth != 0)
+			if (direction == Direction.VERTICAL)
 			{
-				new_position = new Vector2(new_position.getX(), new_position.getY() + vertical_depth);
-				new_velocity = new Vector2(new_velocity.getX(), 0);
-				new_hitbox.setLocation(new_position.asPoint());
+				float vertical_depth = RectangleExtension.getVerticalIntersectionDepth(new_hitbox, p.hitbox);
+				
+				if (vertical_depth != 0)
+				{
+					new_position = new Vector2(new_position.getX(), new_position.getY() + vertical_depth);
+					new_velocity = new Vector2(new_velocity.getX(), 0);
+					new_hitbox.setLocation(new_position.asPoint());
+				}
 			}
-			
-			// Horizontal collisions
-			float horizontal_depth = RectangleExtension.getHorizontalIntersectionDepth(new_hitbox, p.hitbox);
-			
-			if (horizontal_depth != 0)
-			{		
-				new_position = new Vector2(new_position.getX() + horizontal_depth, new_position.getY());
-				new_velocity = new Vector2(0, new_velocity.getY());
-				new_hitbox.setLocation(new_position.asPoint());
+			else if (direction == Direction.HORIZONTAL)
+			{
+				// Horizontal collisions
+				float horizontal_depth = RectangleExtension.getHorizontalIntersectionDepth(new_hitbox, p.hitbox);
+				
+				if (horizontal_depth != 0)
+				{		
+					new_position = new Vector2(new_position.getX() + horizontal_depth, new_position.getY());
+					new_velocity = new Vector2(0, new_velocity.getY());
+					new_hitbox.setLocation(new_position.asPoint());
+				}
 			}
 
 			

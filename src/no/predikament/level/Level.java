@@ -29,7 +29,8 @@ public class Level
 	private List<Entity> 	entities;
 	private int width_in_tiles;
 	private int height_in_tiles;
-	private double gravity = 0.2;
+	private double gravity = 16 * 9.82;
+	private double friction = 0.98;
 	
 	public Level(Game game)
 	{
@@ -75,7 +76,8 @@ public class Level
 	
 	public void update(double delta) 
 	{	
-		Vector2 gravity_vector = new Vector2(0, gravity);
+		Vector2 gravity_vector = new Vector2(0, gravity * delta);
+		Vector2 friction_scalar = new Vector2(friction, 1);
 		
 		for (Tile t : tiles) t.update(delta);
 		
@@ -84,6 +86,7 @@ public class Level
 			if (e instanceof PhysicsEntity)
 			{
 				((PhysicsEntity) e).setVelocity(Vector2.add(((PhysicsEntity) e).getVelocity(), gravity_vector));
+				((PhysicsEntity) e).setVelocity(Vector2.multiply(((PhysicsEntity) e).getVelocity(), friction_scalar));
 			}
 			
 			e.update(delta);
@@ -107,7 +110,7 @@ public class Level
 				}
 				
 				// Drawing hitboxes while testing
-				screen.drawRectangle(t.getHitbox(), 0xFF00FF00);
+				//screen.drawRectangle(t.getHitbox(), 0xFF00FF00);
 			}
 		}
 		

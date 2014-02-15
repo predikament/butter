@@ -61,6 +61,11 @@ public class Vector2
 		return new Vector2(u.x * scalar, u.y * scalar);
 	}
 	
+	public static Vector2 multiply (Vector2 u, Vector2 scalar)
+	{
+		return new Vector2(u.x * scalar.getX(), u.y * scalar.getY());
+	}
+	
 	public static double distanceBetween(final Vector2 u, final Vector2 v)
 	{
 		double x = u.getX() - v.getX();

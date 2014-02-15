@@ -7,13 +7,13 @@ import no.predikament.util.Vector2;
 
 public class Character extends PhysicsEntity 
 {
-	private static final boolean DRAW_HITBOX = true;
+	private static final boolean DRAW_HITBOX = false;
 	
 	private static final int HITBOX_WIDTH = 32;
 	private static final int HITBOX_HEIGHT = 32;
-	private static final int ACCELERATION_X = 25;
-	private static final int MAX_SPEED_X = 50;
-	private static final int MAX_SPEED_Y = 50;
+	private static final int ACCELERATION_X = 1;
+	private static final int MAX_SPEED_X = 75;
+	private static final int MAX_SPEED_Y = 75;
 
 	
 	public Character(Level level)
@@ -60,6 +60,6 @@ public class Character extends PhysicsEntity
 	
 	public void jump()
 	{
-		
+		if (getVelocity().getY() == 0) setVelocity(new Vector2(getVelocity().getX(), -MAX_SPEED_Y));
 	}
 }
