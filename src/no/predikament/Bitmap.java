@@ -413,6 +413,11 @@ public class Bitmap
 		draw(b, 0, 0);
 	}
 	
+	public void draw(Bitmap b, Vector2 position)
+	{
+		draw(b, position.getX(), position.getY());
+	}
+	
 	public void draw(Bitmap b, double xp, double yp)
 	{
 		draw(b, (int) xp, (int) yp);

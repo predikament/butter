@@ -1,5 +1,7 @@
 package no.predikament.entity;
 
+import java.awt.Rectangle;
+
 import no.predikament.Art;
 import no.predikament.Bitmap;
 import no.predikament.level.Level;
@@ -7,13 +9,15 @@ import no.predikament.util.Vector2;
 
 public class Character extends PhysicsEntity 
 {
-	private static final boolean DRAW_HITBOX = false;
+	private static final boolean DRAW_HITBOX = true;
 	
 	private static final int HITBOX_WIDTH = 32;
 	private static final int HITBOX_HEIGHT = 32;
+	private static final int HITBOX_OFFSET_X = 0;
+	private static final int HITBOX_OFFSET_Y = 0;
 	private static final int ACCELERATION_X = 1;
-	private static final int MAX_SPEED_X = 75;
-	private static final int MAX_SPEED_Y = 75;
+	private static final int MAX_SPEED_X = 25;
+	private static final int MAX_SPEED_Y = 25;
 
 	
 	public Character(Level level)
@@ -24,6 +28,15 @@ public class Character extends PhysicsEntity
 	public Character(Level level, Vector2 position)
 	{
 		super(level, position, Vector2.zero(), new Vector2(HITBOX_WIDTH, HITBOX_HEIGHT));
+	}
+	
+	public void update(double delta)
+	{
+		super.update(delta);
+		
+		Rectangle offset_hitbox = getHitbox();
+		offset_hitbox.translate(HITBOX_OFFSET_X, HITBOX_OFFSET_Y);
+		setHitbox(offset_hitbox);
 	}
 	
 	public void render(Bitmap screen) 
@@ -40,13 +53,6 @@ public class Character extends PhysicsEntity
 		
 		super.setVelocity(velocity);
 	}
-	
-	/*public void setHitbox(Rectangle hitbox)
-	{
-		hitbox.translate(HITBOX_OFFSET_X, HITBOX_OFFSET_Y);
-		
-		super.setHitbox(hitbox);
-	}*/
 	
 	public void moveLeft()
 	{

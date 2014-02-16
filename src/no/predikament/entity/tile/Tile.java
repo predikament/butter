@@ -1,5 +1,7 @@
 package no.predikament.entity.tile;
 
+import no.predikament.Art;
+import no.predikament.Bitmap;
 import no.predikament.entity.PhysicsEntity;
 import no.predikament.level.Level;
 
@@ -31,5 +33,12 @@ public class Tile extends PhysicsEntity
 	public String toString()
 	{
 		return String.format("Tile (type: %d) (%s)", getType(), getPosition());
+	}
+	
+	public void render(Bitmap screen)
+	{
+		int draw_type = getType() - 1;
+		
+		if (draw_type >= 0) screen.draw(Art.instance.tiles[0][draw_type / 16], getPosition());
 	}
 }

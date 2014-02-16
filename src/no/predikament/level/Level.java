@@ -1,5 +1,6 @@
 package no.predikament.level;
 
+import java.awt.Rectangle;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
@@ -13,12 +14,12 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import no.predikament.Art;
 import no.predikament.Bitmap;
 import no.predikament.Game;
 import no.predikament.entity.Entity;
 import no.predikament.entity.PhysicsEntity;
 import no.predikament.entity.tile.Tile;
+import no.predikament.util.RectangleExtension;
 import no.predikament.util.Vector2;
 
 public class Level 
@@ -29,8 +30,7 @@ public class Level
 	private List<Entity> 	entities;
 	private int width_in_tiles;
 	private int height_in_tiles;
-	private double gravity = 16 * 9.82;
-	private double friction = 0.98;
+	private double gravity = (16 / 9.82) * 16 + 50;
 	
 	public Level(Game game)
 	{
@@ -76,50 +76,89 @@ public class Level
 	
 	public void update(double delta) 
 	{	
-		Vector2 gravity_vector = new Vector2(0, gravity * delta);
-		Vector2 friction_scalar = new Vector2(friction, 1);
+		Vector2 gravity_vec = new Vector2(0, gravity * delta);
 		
 		for (Tile t : tiles) t.update(delta);
-		
 		for (Entity e : entities)
 		{
-			if (e instanceof PhysicsEntity)
+			PhysicsEntity pe = null;
+			
+			if (e instanceof PhysicsEntity) 
 			{
-				((PhysicsEntity) e).setVelocity(Vector2.add(((PhysicsEntity) e).getVelocity(), gravity_vector));
-				((PhysicsEntity) e).setVelocity(Vector2.multiply(((PhysicsEntity) e).getVelocity(), friction_scalar));
+				pe = (PhysicsEntity) e;
+				
+				pe.setVelocity(Vector2.add(pe.getVelocity(), gravity_vec));
 			}
 			
 			e.update(delta);
+			
+			if (pe != null) handleCollisions(pe);
 		}
+	}
+	
+	public void handleCollisions(PhysicsEntity pe)
+	{
+		// Vertical collisions
+		for (Tile t : tiles)
+		{
+			if (t.isSolid() && pe.getHitbox().intersects(t.getHitbox()))
+			{
+				float vertical_depth = RectangleExtension.getVerticalIntersectionDepth(pe.getHitbox(), t.getHitbox());
+				
+				if (vertical_depth != 0)
+				{
+					Vector2 depth = new Vector2(0, vertical_depth);
+					
+					pe.setPosition(Vector2.add(pe.getPosition(), depth));
+					pe.setVelocity(new Vector2(pe.getVelocity().getX(), 0));
+					Rectangle hb = pe.getHitbox();
+					hb.translate((int) depth.getX(), (int) depth.getY());
+					pe.setHitbox(hb);
+				}
+			}
+		}
+		
+		// Horizontal collisions
+		for (Tile t : tiles)
+		{
+			if (t.isSolid() && pe.getHitbox().intersects(t.getHitbox()))
+			{
+				float horizontal_depth = RectangleExtension.getHorizontalIntersectionDepth(pe.getHitbox(), t.getHitbox());
+				
+				if (horizontal_depth != 0)
+				{
+					Vector2 depth = new Vector2(horizontal_depth, 0);
+					
+					pe.setPosition(Vector2.add(pe.getPosition(), depth));
+					pe.setVelocity(new Vector2(0, pe.getVelocity().getY()));
+					Rectangle hb = pe.getHitbox();
+					hb.translate((int) depth.getX(), (int) depth.getY());
+					pe.setHitbox(hb);
+				}
+			}
+		}
+	}
+	
+	public final boolean isVisibleOnMap(PhysicsEntity e)
+	{
+		boolean visible = e.getHitbox().intersects(new Rectangle(	(int) -e.getHitbox().getWidth(), 
+																	(int) -e.getHitbox().getHeight(), 
+																	(int) (Game.WIDTH + e.getHitbox().getWidth()), 
+																	(int) (Game.HEIGHT + e.getHitbox().getHeight())));
+		
+		return visible;
 	}
 	
 	public void render(Bitmap screen) 
 	{
 		for (Tile t : tiles)
 		{
-			boolean visible = 	t.getPosition().getX() > -32 && t.getPosition().getX() < Game.WIDTH &&
-								t.getPosition().getY() >= -32 && t.getPosition().getY() < Game.HEIGHT;
-			
-			if (visible)
-			{
-				int draw_type = t.getType() - 1;
-				
-				if (draw_type >= 0) 
-				{
-					screen.draw(Art.instance.tiles[draw_type % 16][draw_type / 16], t.getPosition().getX(), t.getPosition().getY());
-				}
-				
-				// Drawing hitboxes while testing
-				//screen.drawRectangle(t.getHitbox(), 0xFF00FF00);
-			}
+			if (isVisibleOnMap(t)) t.render(screen);
 		}
 		
 		for (Entity e : entities)
 		{
-			boolean visible = 	e.getPosition().getX() > -32 && e.getPosition().getX() < Game.WIDTH &&
-								e.getPosition().getY() > -32 && e.getPosition().getY() < Game.HEIGHT;
-			
-			if (visible) e.render(screen);
+			e.render(screen);
 		}
 	}
 	
